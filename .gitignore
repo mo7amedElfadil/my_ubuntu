@@ -2,4 +2,4 @@
 !/.bash_aliases
 !/.vimrc
 !/.gitignore
-!**/.config/nvim/init.vim
+!/.config/nvim/init.vim
