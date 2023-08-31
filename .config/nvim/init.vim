@@ -16,7 +16,7 @@ Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-easy-align'
 
 " Any valid git URL is allowed
-Plug 'https://github.com/junegunn/vim-github-dashboard.git'
+Plug 'junegunn/vim-github-dashboard'
 
 " Multiple Plug commands can be written in a single line using | separators
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'

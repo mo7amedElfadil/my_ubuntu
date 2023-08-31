@@ -1,8 +1,11 @@
-alias task="cd ~/alx_se/alx-low_level_programming/0x04-more_functions_nested_loops"
+shopt -s expand_aliases
+
+alias task="cd ~/alx_se/alx-low_level_programming/0x08-recursion/"
 alias vi="nvim"
 alias vim="nvim"
 alias l="ls -la"
-
+alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
+alias rm_swap="rm ~/.local/share/nvim/swap/*"
 function lazygit() {
     git add .
     git commit -a -m "$1"
