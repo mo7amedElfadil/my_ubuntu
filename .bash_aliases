@@ -1,17 +1,23 @@
 shopt -s expand_aliases
 
-alias task="cd ~/alx_se/alx-low_level_programming/0x08-recursion/"
+alias task="cd ~/alx_se/simple_shell"
+alias v="nvim"
 alias vi="nvim"
 alias vim="nvim"
 alias l="ls -la"
 alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
 alias rm_swap="rm ~/.local/share/nvim/swap/*"
+alias shell="gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh"
+alias she="~/alx_se/simple_shell/./hsh"
 function lazygit() {
     git add .
     git commit -a -m "$1"
     git push
 }
-
+function hsh() {
+	she
+}
+export -f hsh
 export -f lazygit
 
 function newT(){
