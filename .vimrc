@@ -7,6 +7,7 @@
 :set softtabstop=4
 :set mouse=a
 autocmd BufWritePre *.c :%s/\s\+$//e 
+autocmd BufWritePre *.py :%s/\s\+$//e 
 
 let $BASH_ENV="~/vim_bash"
 

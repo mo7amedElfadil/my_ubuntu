@@ -2,6 +2,8 @@
 /**
 !/.bash_aliases
 !/.vimrc
+!/.zshrc
+!/.zshenv
 !/.gitignore
 !/.config/nvim/
 !/.config/nvim/init.vim
