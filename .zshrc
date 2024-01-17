@@ -13,6 +13,7 @@ alias she="~/alx_se/simple_shell/./hsh"
 alias monty="gcc -Wall -Werror -Wextra -pedantic -std=c89 *.c -o monty"
 alias actiV="source venv/bin/activate"
 alias deactiV="deactivate"
+alias suroot='sudo -E -s'
 ##########################################################################
 
 # If you come from bash you might have to change your $PATH.
@@ -20,6 +21,7 @@ alias deactiV="deactivate"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export PATH=$PATH:$(npm bin -g)
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
