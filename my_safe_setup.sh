@@ -66,6 +66,13 @@ sudo snap install discord
 # spotify
 sudo snap install spotify
 
+# wacom
+sudo add-apt-repository ppa:doctormo/wacom-plus
+sudo apt-get update
+sudo apt-get dist-upgrade
+sudo apt-get install wacom-dkms
+
+
 # Now for the work-related installations
 
 # git
