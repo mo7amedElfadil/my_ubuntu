@@ -1,11 +1,8 @@
 requests
-cmd
 pycodestyle
 pep8
 numpy
 pandas
-json
 pipenv
 SQLAlchemy
 beautifulsoup4
-turtle

@@ -2,17 +2,33 @@
 
 # Function to check and install packages
 check_and_install() {
+	GR='\033[0;32m'
+	RED='\033[0;31m'
+	NC='\033[0m' # No Color
     for package in "$@"; do
-        if ! dpkg -l | grep -q $package; then
-            echo "Installing $package..."
+        if ! dpkg-query -W -f='${Status}' $package 2>/dev/null | grep -q "ok installed"; then
+			echo -e "${GR}Installing $package...${NC}"
             sudo apt install -y $package
         else
-            echo "$package is already installed. Skipping..."
+            echo -e "${RED} $package is already installed. Skipping...${NC}"
         fi
     done
 }
 
-
+# Function to check and create directories
+check_and_create_directory() {
+	GR='\033[0;32m'
+	RED='\033[0;31m'
+	NC='\033[0m' # No Color
+    for directory in "$@"; do
+        if [ ! -d "$directory" ]; then
+            echo -e "${GR} Creating directory: $directory ${NC}"
+            mkdir -p $directory
+        else
+			echo -e "${RED}Directory $directory already exists. Skipping... ${NC}"
+        fi
+    done
+}
 
 
 # update apt
@@ -60,11 +76,12 @@ sudo apt update
 check_and_install build-essential
 
 # betty
-if [ ! -d "~/Git_repos/Betty" ]; then
-    mkdir -p ~/Git_repos
-    cd ~/Git_repos
+betty_directory="$HOME/Git_repos/Betty"
+if [ ! -d "$betty_directory" ]; then
+    check_and_create_directory "$betty_directory"
+    cd $betty_directory
     git clone https://github.com/alx-tools/Betty.git
-    cd ~/Git_repos/Betty
+    cd $betty_directory/Betty
     sudo ./install.sh
     echo -e "#!/bin/bash\n
     BIN_PATH=\"/usr/local/bin\"\n
@@ -91,7 +108,8 @@ check_and_install valgrind
 
 # zsh
 check_and_install zsh
-if [ ! -d "~/.oh-my-zsh" ]; then
+oh_my_zsh_directory="$HOME/.oh-my-zsh"
+if [ ! -d "$oh_my_zsh_directory" ]; then
     sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
     echo "Oh My Zsh is already installed. Skipping..."
@@ -101,24 +119,32 @@ fi
 sudo snap install nvim --classic
 
 # vimplug_config
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+vimplug_directory="$HOME/.local/share/nvim/site/autoload"
+if [ ! -d "$vimplug_directory" ]; then
+    check_and_create_directory "$vimplug_directory"
+    sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+else
+    echo "VimPlug is already installed. Skipping..."
+fi
 
 # pulling our config files
-cd ~
-if [ ! -d "~/my_ubuntu" ]; then
-    git clone git@github.com:mo7amedElfadil/my_ubuntu.git
-    cd my_ubuntu
-    mv * ~/
+my_ubuntu_directory="$HOME/my_ubuntu"
+if [ ! -d "$my_ubuntu_directory" ]; then
+    check_and_create_directory "$my_ubuntu_directory"
+    git clone git@github.com:mo7amedElfadil/my_ubuntu.git $my_ubuntu_directory
+    cd $my_ubuntu_directory
+    mv * $HOME/
     nvim -c ':PlugInstall' -c 'qa!'
 else
     echo "my_ubuntu config files are already present. Skipping..."
 fi
 
 # python
-check_and_install python3
+check_and_install python3 python3-pip
+
 # make a requirements file for pip
-pip install -r ~/requirements.txt
+pip3 install -r $HOME/requirements.txt
 
 # mysql
 check_and_install mysql-server
@@ -141,8 +167,10 @@ sudo systemctl start mysql.service
 # https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04
 
 # W3C-Validator
-if [ ! -d "~/Git_repos/W3C-Validator" ]; then
-    cd ~/Git_repos
+w3c_validator_directory="$HOME/Git_repos/W3C-Validator"
+if [ ! -d "$w3c_validator_directory" ]; then
+    check_and_create_directory "$w3c_validator_directory"
+    cd $HOME/Git_repos
     git clone https://github.com/holbertonschool/W3C-Validator.git
 else
     echo "W3C-Validator is already installed. Skipping..."
