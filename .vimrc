@@ -8,6 +8,7 @@
 :set mouse=a
 autocmd BufWritePre *.c :%s/\s\+$//e 
 autocmd BufWritePre *.py :%s/\s\+$//e 
+autocmd BufWritePre *.sql :%s/\s\+$//e 
 
 let $BASH_ENV="~/vim_bash"
 

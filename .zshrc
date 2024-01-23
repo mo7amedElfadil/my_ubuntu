@@ -5,6 +5,7 @@ alias cdmon="cd ~/alx_se/monty"
 alias cddev="cd ~/alx_se/alx-system_engineering-devops"
 alias cdsort="cd ~/alx_se/sorting_algorithms"
 alias cdbnb="cd ~/alx_se/AirBnB_clone"
+alias cdgit="cd ~/Git_repos"
 alias l="ls -la"
 alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
 alias rm_swap="rm ~/.local/share/nvim/swap/*"
@@ -14,6 +15,9 @@ alias monty="gcc -Wall -Werror -Wextra -pedantic -std=c89 *.c -o monty"
 alias actiV="source venv/bin/activate"
 alias deactiV="deactivate"
 alias suroot='sudo -E -s'
+alias w3c_validator="python3 ~/Git_repos/W3C-Validator/w3c_validator.py"
+alias settings="gnome-control-center"
+
 ##########################################################################
 
 # If you come from bash you might have to change your $PATH.
@@ -21,16 +25,16 @@ alias suroot='sudo -E -s'
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-export PATH=$PATH:$(npm bin -g)
+# export PATH=$PATH:$(npm bin -g)
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
 #ZSH_THEME="agnoster"
 #ZSH_THEME="gnzh"
-#ZSH_THEME="smt"
+# ZSH_THEME="smt"
 ZSH_THEME="example"
 # ZSH_THEME="random"
 prompt_context(){}
@@ -150,6 +154,11 @@ alx() {
  alias zshenv="nvim ~/.zshenv"
  alias ohmyzsh="nvim ~/.oh-my-zsh"
  alias vimconfig="nvim ~/.config/nvim/init.vim"
- export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
+ # export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+

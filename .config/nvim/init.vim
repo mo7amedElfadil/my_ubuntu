@@ -7,6 +7,8 @@
 :set softtabstop=4
 :set mouse=a
 autocmd BufWritePre *.c :%s/\s\+$//e 
+autocmd BufWritePre *.py :%s/\s\+$//e 
+autocmd BufWritePre *.sql :%s/\s\+$//e 
 
 call plug#begin('~/.local/share/nvim/site/plugged')
 
@@ -27,7 +29,7 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
 " Using a non-default branch
 Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
-
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Using a tagged release; wildcard allowed (requires git 1.9.2 or above)
 Plug 'fatih/vim-go', { 'tag': '*' }
 
@@ -41,10 +43,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug '~/my-prototype-plugin'
 
 Plug 'ThePrimeagen/vim-be-good'
-" If you don't have nodejs and yarn
-" use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
-" see: https://github.com/iamcco/markdown-preview.nvim/issues/50
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
@@ -52,10 +50,16 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 Plug 'nanotee/sqls.nvim'
 
-Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'npm ci'}
-
+" If you don't have nodejs and yarn
+" use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
+" see: https://github.com/iamcco/markdown-preview.nvim/issues/50
+" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+"
+Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
+Plug 'https://github.com/wolandark/vim-live-server.git'
 " If you have nodejs and yarn
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+" Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+"
 Plug 'dense-analysis/ale'
 Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
 Plug 'https://github.com/preservim/nerdtree' " NerdTree
@@ -120,6 +124,11 @@ nmap <C-s> <Plug>MarkdownPreview
 nmap <M-s> <Plug>MarkdownPreviewStop
 nmap <C-p> <Plug>MarkdownPreviewToggle
 
+
+nmap <F2> :StartBrowserSync <CR>
+nmap <F3> :KillBrowserSync <CR>
+
+
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 source ~/.vimrc
@@ -130,9 +139,9 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-" let g:LanguageClient_serverCommands = {
-"     \ 'sql': ['sql-language-server', 'up', '--method', 'stdio'],
-"     \ }
+let g:LanguageClient_serverCommands = {
+    \ 'sql': ['sql-language-server', 'up', '--method', 'stdio'],
+    \ }
 " xmap <leader>f  <Plug>(coc-format-selected)
 " nmap <leader>f  <Plug>(coc-format-selected)
 :let mapleader = ","

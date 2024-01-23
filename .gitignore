@@ -7,3 +7,7 @@
 !/.gitignore
 !/.config/nvim/
 !/.config/nvim/init.vim
+!/my_safe_setup.sh
+!/my_setup_file.sh
+!/.oh-my-zsh/custom/themes/example.zsh-theme
+!/requirements.txt
