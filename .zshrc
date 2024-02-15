@@ -5,7 +5,11 @@ alias cdmon="cd ~/alx_se/monty"
 alias cddev="cd ~/alx_se/alx-system_engineering-devops"
 alias cdsort="cd ~/alx_se/sorting_algorithms"
 alias cdbnb="cd ~/alx_se/AirBnB_clone"
+alias cdtree="cd ~/alx_se/binary_trees"
 alias cdgit="cd ~/Git_repos"
+alias cdproj="cd ~/alx_se"
+alias cdprint="cd ~/alx_se/printf"
+alias cdpractice="cd ~/Documents/Random"
 alias l="ls -la"
 alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
 alias rm_swap="rm ~/.local/share/nvim/swap/*"
@@ -17,6 +21,9 @@ alias deactiV="deactivate"
 alias suroot='sudo -E -s'
 alias w3c_validator="python3 ~/Git_repos/W3C-Validator/w3c_validator.py"
 alias settings="gnome-control-center"
+alias update="sudo apt update && sudo apt upgrade"
+alias install="sudo apt install"
+alias remove="sudo apt remove"
 
 ##########################################################################
 

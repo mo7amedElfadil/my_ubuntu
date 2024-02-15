@@ -30,18 +30,19 @@ check_and_create_directory() {
     done
 }
 
-
+ZZ
 # update apt
 sudo apt update
 sudo apt upgrade -y
 
 # Install additional Apps
-check_and_install vlc gimp gparted synaptic snapd
+check_and_install snapd
+# vlc gimp gparted synaptic
 sudo snap install snap-store
 
 # Install Media Codecs
 # Note: select yes on all
-check_and_install ubuntu-restricted-extras
+# check_and_install ubuntu-restricted-extras
 
 # to boost performance and responsiveness with preload
 check_and_install preload
@@ -50,27 +51,27 @@ check_and_install preload
 check_and_install tlp tlp-rdw
 
 # Add numix theme and icons
-sudo add-apt-repository ppa:numix/ppa
-sudo apt-get update
-check_and_install numix-gtk-theme numix-icon-theme-circle
+# sudo add-apt-repository ppa:numix/ppa
+# sudo apt-get update
+# check_and_install numix-gtk-theme numix-icon-theme-circle
 
 # Add Bleachbit for cleanup
-check_and_install bleachbit
+# check_and_install bleachbit
 
 # vs code
-sudo snap install --classic code
+# sudo snap install --classic code
 
 # discord
-sudo snap install discord
+# sudo snap install discord
 
 # spotify
-sudo snap install spotify
+# sudo snap install spotify
 
 # wacom
-sudo add-apt-repository ppa:doctormo/wacom-plus
-sudo apt-get update
-sudo apt-get dist-upgrade
-sudo apt-get install wacom-dkms
+# sudo add-apt-repository ppa:doctormo/wacom-plus
+# sudo apt-get update
+# sudo apt-get dist-upgrade
+# sudo apt-get install wacom-dkms
 
 
 # Now for the work-related installations
@@ -183,9 +184,9 @@ else
     echo "W3C-Validator is already installed. Skipping..."
 fi
 
+echo ; echo
 echo "Remember to manually Download: "
 echo "Chrome"
-
-echo ; echo
-echo "Some programs require future installations:"
+echo
+echo "Some programs require further installations:"
 echo "mysql"

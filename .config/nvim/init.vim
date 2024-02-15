@@ -8,7 +8,21 @@
 :set mouse=a
 autocmd BufWritePre *.c :%s/\s\+$//e 
 autocmd BufWritePre *.py :%s/\s\+$//e 
+autocmd BufWritePre *.html :%s/\s\+$//e 
+autocmd BufWritePre *.js :%s/\s\+$//e 
+autocmd BufWritePre *.css :%s/\s\+$//e 
 autocmd BufWritePre *.sql :%s/\s\+$//e 
+
+
+augroup custom_indentation
+  autocmd!
+
+  " for html/rb files, 2 spaces
+  autocmd Filetype html setlocal ts=2 sw=2 expandtab
+  " for js/coffee/jade files, 4 spaces
+  autocmd Filetype javascript setlocal ts=2 sw=2 sts=0 expandtab
+augroup END
+
 
 call plug#begin('~/.local/share/nvim/site/plugged')
 
@@ -72,6 +86,9 @@ Plug 'https://github.com/ryanoasis/vim-devicons' " Developer Icons
 Plug 'https://github.com/tc50cal/vim-terminal' " Vim Terminal
 Plug 'https://github.com/preservim/tagbar' " Tagbar for code navigation
 Plug 'https://github.com/terryma/vim-multiple-cursors' " CTRL + N for multiple cursors
+
+Plug 'https://github.com/kentchiu/gemini.nvim' " Gemini 
+
 
 set encoding=UTF-8
 
@@ -145,3 +162,9 @@ let g:LanguageClient_serverCommands = {
 " xmap <leader>f  <Plug>(coc-format-selected)
 " nmap <leader>f  <Plug>(coc-format-selected)
 :let mapleader = ","
+
+let g:syntastic_javascript_checkers=['standard']
+let g:syntastic_javascript_standard_exec = 'semistandard'
+
+autocmd bufwritepost *.js silent !semistandard % --fix
+set autoread
