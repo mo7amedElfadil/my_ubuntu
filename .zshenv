@@ -8,6 +8,10 @@ function hsh() {
 	she
 }
 
+addgit() {
+	echo "!/$1" >> .gitignore
+}
+
 
 newt() {
 	if [[ $1 == *".c" ]] 
@@ -26,23 +30,60 @@ newt() {
 		echo "#!/usr/bin/env bash" >> $1
 		chmod +x $1
 	fi
-	extension=$(echo "$1" | rev | cut -d'.' -f1 | rev)
-	number=$(echo "$1" | grep -oE '^[0-9]+')
-	main_file=main_files/$number-main.$extension
-	if [ ! -d "main_files" ]
-	then
-		mkdir main_files
+	if [[ "$1" == *.* ]]; then
+		extension=$(echo "$1" | rev | cut -d'.' -f1 | rev)
+		if [[ $extension == "py" ]]; then
+			tester=pycodestyle
+		elif [[ $extension == "js" ]]; then
+			tester=semistandard
+		elif [[ $extension == "sh" ]]; then
+			tester=shellcheck
+		elif [[ $extension == "c" ]]; then
+			tester=betty
+		fi
+	else
+		extension="sh"
 	fi
-	nvim $main_file
-	chmod +x $main_file
+
+	number=$(echo "$1" | grep -oE '^[0-9]+')
+	echo "Main file? y/n/f"
+	read response
+	if [[ $response == "f" ]]
+	then
+		extension="sh"
+		response="y"
+	fi
+	if [[ $response == "y" ]]
+	then
+		main_file=main_files/$number-main.$extension
+		echo "Main file created: $main_file"
+		if [ ! -d "main_files" ]
+		then
+			mkdir main_files
+		fi
+		if [[ $main_file == *".py" ]] 
+		then
+			echo "#!/usr/bin/python3" >> $main_file
+			chmod +x $1
+		elif [[ $main_file == *".js" ]] 
+		then
+			echo "#!/usr/bin/node" >> $main_file
+
+		else
+			echo "#!/usr/bin/env bash" >> $main_file
+		fi
+
+		chmod +x $main_file
+		nvim $main_file
+	fi
 	nvim $1
 	echo "run file? y/n"
 	read response
 	if [[ $response == "y" ]]
 	then
-		run $(echo "$1" | grep -oE '^[0-9]+')
+		run $(echo "$1" | grep -oE '^[0-9]+') "${@:2}"
 	fi
-
+	$tester $1
 	echo "Begin Commit process? y/n"
 	read response
 	if [[ $response == "y" ]]
@@ -102,19 +143,75 @@ else
 	number=$1
 fi
 
-
 # Construct the command to run the main file
 file=$(ls | grep "$number-.*")
-echo $file
-extension=$(echo "$file" | rev | cut -d'.' -f1 | rev)
-command="main_files/${number}-main.${extension}"
+if [[ "$file" == *.* ]]; then
+	extension=$(echo "$file" | rev | cut -d'.' -f1 | rev)
+else
+	extension="sh"
+fi
+
+
+len=$(echo "$extension" | wc -l)
+if [[ $len -gt 1 ]]; then
+	while IFS= read -r ext; do
+		if [[ $ext == "py" ]]; then
+			extension="py"
+		elif [[ $ext == "js" ]]; then
+			extension="js"
+		elif [[ $ext == "sh" ]]; then
+			extension="sh"
+		fi
+	done <<< "$extension"
+fi
+if [[ $extension == "pp" ]]; then
+	extension="sh"
+fi
+if [[ -f main_files/$number-main.$extension ]]; then
+	command="main_files/$number-main.${extension}"
+elif [[ -f main_files/$number-main.sh && "$extension" == "py" ]]; then
+	command="main_files/$number-main.sh"
+else
+	command="$file"
+fi
 
 # Check if the file exists before attempting to run it
 if [ ! -f "$command" ]; then
   echo "Error: File $command not found."
   exit 1
 fi
-
-# Run the command
-./$command
+# Run the command with arguments
+if [[ $# -gt 1 ]]; then
+	./$command "${@:2}"  2>/dev/null || sudo ./$command "${@:2}" 2>/dev/null
+else
+	./$command 
+fi 
 }
+
+
+# function to create a new project directory
+newproj() {
+	mkdir $1
+	cd $1
+	echo "# $1" >> README.md
+	mkdir main_files
+	echo "What language are you using? (c, py, js, sh)"
+	read language
+	if [[ $language == "c" ]]
+	then
+		echo -e "*\n!/*.so\n!/.gitignore\n!/*.h\n!/*.c\n!/*.sh\n!/README.md\n*main.c" >> .gitignore
+	elif [[ $language == "py" ]]
+	then
+		echo -e "*\n!/*.py\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.py" >> .gitignore
+	elif [[ $language == "js" ]]
+	then
+		echo -e "*\n!/*.js\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.js" >> .gitignore
+	elif [[ $language == "sh" ]]
+	then
+		echo -e "*\n!/*.sh\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.sh" >> .gitignore
+	else
+		echo -e "*\n!/.gitignore\n!/README.md\n!/LICENSE" >> .gitignore
+		echo "Make sure to add the file extensions to the .gitignore file"
+	fi
+}
+

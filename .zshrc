@@ -5,6 +5,7 @@ alias cdmon="cd ~/alx_se/monty"
 alias cddev="cd ~/alx_se/alx-system_engineering-devops"
 alias cdsort="cd ~/alx_se/sorting_algorithms"
 alias cdbnb="cd ~/alx_se/AirBnB_clone"
+alias cdbnbSQL="cd ~/alx_se/AirBnB_clone_v2"
 alias cdtree="cd ~/alx_se/binary_trees"
 alias cdgit="cd ~/Git_repos"
 alias cdproj="cd ~/alx_se"
@@ -24,14 +25,46 @@ alias settings="gnome-control-center"
 alias update="sudo apt update && sudo apt upgrade"
 alias install="sudo apt install"
 alias remove="sudo apt remove"
-
+alias zshtheme="nvim ~/.oh-my-zsh/custom/themes/example.zsh-theme"
+alias mysql="sudo mysql"
+alias mysql_root="sudo mysql -u root -p"
+alias connectweb1="ssh -i ~/.ssh/id_rsa ubuntu@54.144.238.161"
+alias connectweb2="ssh -i ~/.ssh/id_rsa ubuntu@100.25.154.52"
+alias connectlb="ssh -i ~/.ssh/id_rsa ubuntu@52.3.249.43"
 ##########################################################################
+
+export RESET='\e[0m' # No Color
+export COLOR_BLACK='\e[0;30m'
+export COLOR_GRAY='\e[1;30m'
+export COLOR_RED='\e[0;31m'
+export COLOR_LIGHT_RED='\e[1;31m'
+export COLOR_GREEN='\e[0;32m'
+export COLOR_LIGHT_GREEN='\e[1;32m'
+export COLOR_BROWN='\e[0;33m'
+export COLOR_YELLOW='\e[1;33m'
+export COLOR_BLUE='\e[0;34m'
+export COLOR_LIGHT_BLUE='\e[1;34m'
+export COLOR_PURPLE='\e[0;35m'
+export COLOR_LIGHT_PURPLE='\e[1;35m'
+export COLOR_CYAN='\e[0;36m'
+export COLOR_LIGHT_CYAN='\e[1;36m'
+export COLOR_LIGHT_GRAY='\e[0;37m'
+export COLOR_WHITE='\e[1;37m'
+export SERVER1=54.144.238.161
+export SERVER2=100.25.154.52
+export SERVER3LB=52.3.249.43
+export pynetsandboxUSER='9c93421f0a2b'
+export pynetsandboxHOST='9c93421f0a2b.14cd97b2.alx-cod.online'
+export pynetsandboxPW='790491d291413e324e5d'
+export gitUSER='mo7amedElfadil'
+export gitTOKEN='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'
 
 # If you come from bash you might have to change your $PATH.
  # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export PATH="$PATH:$HOME/bin"
 # export PATH=$PATH:$(npm bin -g)
 
 # Set name of the theme to load --- if set to "random", it will
@@ -106,7 +139,7 @@ prompt_context(){}
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git python)
-
+ZSH_DISABLE_COMPFIX='true'
 source $ZSH/oh-my-zsh.sh
 
 # User configuration

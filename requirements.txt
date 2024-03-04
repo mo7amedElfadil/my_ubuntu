@@ -6,3 +6,5 @@ pandas
 pipenv
 SQLAlchemy
 beautifulsoup4
+neovim
+mysqlclient

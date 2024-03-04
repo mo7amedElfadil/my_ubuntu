@@ -13,7 +13,6 @@ autocmd BufWritePre *.js :%s/\s\+$//e
 autocmd BufWritePre *.css :%s/\s\+$//e 
 autocmd BufWritePre *.sql :%s/\s\+$//e 
 
-
 augroup custom_indentation
   autocmd!
 
@@ -168,3 +167,5 @@ let g:syntastic_javascript_standard_exec = 'semistandard'
 
 autocmd bufwritepost *.js silent !semistandard % --fix
 set autoread
+" disable copilot
+let g:copilot#enabled = 0

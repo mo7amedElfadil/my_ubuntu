@@ -30,7 +30,6 @@ check_and_create_directory() {
     done
 }
 
-ZZ
 # update apt
 sudo apt update
 sudo apt upgrade -y
@@ -38,7 +37,7 @@ sudo apt upgrade -y
 # Install additional Apps
 check_and_install snapd
 # vlc gimp gparted synaptic
-sudo snap install snap-store
+# sudo snap install snap-store
 
 # Install Media Codecs
 # Note: select yes on all
@@ -124,7 +123,7 @@ else
 fi
 
 # nvim
-sudo snap install nvim --classic
+# sudo snap install nvim --classic
 
 # vimplug_config
 vimplug_directory="$HOME/.local/share/nvim/site/autoload"
@@ -156,7 +155,10 @@ pip3 install -r $HOME/requirements.txt
 
 # mysql
 check_and_install mysql-server
-sudo systemctl start mysql.service
+read -p "Start mysql service? (y/n): " start_mysql
+if [ $start_mysql = "y" ]; then
+	sudo systemctl start mysql.service
+fi
 # further manual setup required. check the following
 # sudo mysql_secure_installation
 # mysql -u root -p
@@ -174,6 +176,12 @@ sudo systemctl start mysql.service
 # refer to following for instructions:
 # https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04
 
+# virtualenv
+sudo apt-get install python3-venv
+sudo apt-get install python3-dev
+sudo apt-get install libmysqlclient-dev
+sudo apt-get install zlib1g-dev
+sudo pip3 install mysqlclient
 # W3C-Validator
 w3c_validator_directory="$HOME/Git_repos/W3C-Validator"
 if [ ! -d "$w3c_validator_directory" ]; then
