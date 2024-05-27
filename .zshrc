@@ -4,7 +4,8 @@ alias cdlow="cd ~/alx_se/alx-low_level_programming"
 alias cdmon="cd ~/alx_se/monty"
 alias cddev="cd ~/alx_se/alx-system_engineering-devops"
 alias cdsort="cd ~/alx_se/sorting_algorithms"
-alias cdbnb3="cd ~/alx_se/AirBnB_clone_v3"
+alias cdbnb33="cd ~/alx_se/AirBnB_clone_v3"
+alias cdbnb2="cd ~/alx_se/myAirBnb_v2/AirBnB_clone_v2_v3"
 alias cdbnb2="cd ~/alx_se/myAirBnb_v2/AirBnB_clone_v2"
 alias cdbnbSQL="cd ~/alx_se/AirBnB_clone_v2"
 alias cdtree="cd ~/alx_se/binary_trees"
@@ -13,12 +14,16 @@ alias cdproj="cd ~/alx_se"
 alias cdprint="cd ~/alx_se/printf"
 alias cdpractice="cd ~/Documents/Random"
 alias cdcheck="cd ~/alx_se/checker_suite"
+alias cdcheck="cd ~/alx_se/checker_suite"
 alias l="ls -la"
 alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
 alias rm_swap="rm ~/.local/share/nvim/swap/*"
 alias shell="gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh"
 alias she="~/alx_se/simple_shell/./hsh"
 alias monty="gcc -Wall -Werror -Wextra -pedantic -std=c89 *.c -o monty"
+alias venv="python3 -m venv venv"
+alias act="source venv/bin/activate"
+alias deact="deactivate"
 alias venv="python3 -m venv venv"
 alias act="source venv/bin/activate"
 alias deact="deactivate"
@@ -32,9 +37,14 @@ alias zshtheme="nvim ~/.oh-my-zsh/custom/themes/example.zsh-theme"
 alias mysql="sudo mysql"
 alias mysql_root="sudo mysql -u root -p"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
+alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 ##########################################################################
 
 export RESET='\e[0m' # No Color
+export COLOR_RED='\e[0;31m'
+export COLOR_GREEN='\e[0;32m'
+export COLOR_YELLOW='\e[1;33m'
+export COLOR_BLUE='\e[0;34m'
 export COLOR_RED='\e[0;31m'
 export COLOR_GREEN='\e[0;32m'
 export COLOR_YELLOW='\e[1;33m'
@@ -57,11 +67,17 @@ export SERVER1=18.234.145.137
 export SERVER2=54.196.49.246
 # export SERVER3LB=52.3.249.43
 export SERVER3LB=54.209.103.106
+# export SERVER1=54.144.238.161
+export SERVER1=18.234.145.137
+# export SERVER2=100.25.154.52
+export SERVER2=54.196.49.246
+# export SERVER3LB=52.3.249.43
+export SERVER3LB=54.209.103.106
 export pynetsandboxUSER='9c93421f0a2b'
 export pynetsandboxHOST='9c93421f0a2b.14cd97b2.alx-cod.online'
 export pynetsandboxPW='790491d291413e324e5d'
-export gitUSER='mo7amedElfadil'
 export sshKEY='~/.ssh/id_rsa'
+source ~/.zshvars
 # If you come from bash you might have to change your $PATH.
  # export PATH=$HOME/bin:/usr/local/bin:$PATH
 alias connectweb1="ssh -i ~/.ssh/id_rsa ubuntu@$SERVER1"
@@ -70,6 +86,7 @@ alias connectlb="ssh -i ~/.ssh/id_rsa ubuntu@$SERVER3LB"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export PATH="$PATH:$HOME/bin"
+export NODE_PATH=/usr/lib/node_modules
 export NODE_PATH=/usr/lib/node_modules
 # export PATH=$PATH:$(npm bin -g)
 export DD_SITE="datadoghq.com"
