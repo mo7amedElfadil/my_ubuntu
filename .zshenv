@@ -4,6 +4,21 @@ function lazygit() {
 	git commit -a -m "$1"
 	git push
 }
+
+function commit() {
+	git add .
+	git commit -m "$1"
+}
+
+function create_repo() {
+	newproj $1
+	rm -rf main_files
+	git init
+	gh repo create $1 --public --source=. --remote=origin
+	git branch -m master main
+	lazygit "Initial commit"
+}
+
 function hsh() {
 	she
 }
@@ -131,7 +146,7 @@ newt() {
 		echo -e "#include \"main.h\"\n/**\n * main - Entry point\n *\n * Return: Always 0 (Success)\n */\nint main(void)\n{\n\n\n\treturn (0);\n}" >>$1
 	elif [[ $1 == *".py" ]] 
 	then
-		echo -e "#!/usr/bin/python3" >> $1
+		echo -e "#!/usr/bin/env python3" >> $1
 		chmod +x $1
 	elif [[ $1 == *".js" ]] 
 	then
@@ -177,6 +192,7 @@ newt() {
 		then
 			echo """#!/usr/bin/python3
 import os
+import sys
 
 # Get the current directory of the script
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -186,7 +202,7 @@ parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 
 # Add the parent directory to the system path
 sys.path.append(parent_dir)
-			""" >> $main_file
+""" >> $main_file
 			chmod +x $1
 		elif [[ $main_file == *".js" ]] 
 		then

@@ -216,7 +216,8 @@ alx() {
 alias zshconfig="nvim ~/.zshrc"
 alias zshenv="nvim ~/.zshenv"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias vimconfig="nvim ~/.config/nvim/init.vim"
+alias vimconfig="nvim ~/.config/nvim/init.lua"
+alias vimrc="nvim ~/.vimrc"
 # export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
