@@ -7,6 +7,7 @@
 !/.gitignore
 !/.config/nvim/
 !/.config/nvim/init.vim
+!/.config/nvim/init.lua
 !/.config/nvim/lua/
 !/.config/nvim/lua/*
 !/.config/nvim/lua/auto_cmp.lua
@@ -14,7 +15,11 @@
 !/.config/nvim/lua/keybindings.lua
 !/.config/nvim/lua/lsp.lua
 !/.config/nvim/lua/sqlcap.lua
+!/.oh-my-zsh/custom/themes
 !/my_safe_setup.sh
 !/my_setup_file.sh
+!/.oh-my-zsh/
+!/.oh-my-zsh/custom/
+!/.oh-my-zsh/custom/themes/
 !/.oh-my-zsh/custom/themes/example.zsh-theme
 !/requirements.txt
