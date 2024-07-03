@@ -1,6 +1,32 @@
 -- bring `vim-plug` to lua
 local Plug = vim.fn['plug#'];
 
+local function map(mode, lhs, rhs, opts)
+    local options = { noremap = true, silent = true }
+    if opts then
+        if opts.desc then
+            opts.desc = "keymaps.lua: " .. opts.desc
+        end
+        options = vim.tbl_extend('force', options, opts)
+    end
+    vim.keymap.set(mode, lhs, rhs, options)
+end
+
+if vim.fn.has('wsl') == 1 then
+  vim.g.clipboard = {
+    name = 'WslClipboard',
+    copy = {
+      ['+'] = 'xclip -selection clipboard',
+      ['*'] = 'xclip -selection clipboard',
+    },
+    paste = {
+      ['+'] = 'xclip -selection clipboard -o',
+      ['*'] = 'xclip -selection clipboard -o',
+    },
+    cache_enabled = 0,
+  }
+end
+
 --------- IMPORT CUSTOM PLUGINS --------------
 -- set map leader
 vim.g.mapleader = ','
@@ -14,6 +40,13 @@ vim.keymap.set('n', '<leader>,', function() require('comment').comment_line() en
 -- sql capitalize
 vim.keymap.set('n', '<leader>gq', function () require('sqlcap').capitalize() end,
 {noremap = true, silent = true, desc = 'capitalize sql keywords'})
+
+-- copilot keybindings
+-- enable copilot by remapping :Copilot enable to <leader>ce
+map('n', '<leader>ce', ':Copilot enable<CR>', {desc = 'enable copilot'})
+-- enable copilot by remapping :Copilot disable to <leader>cd
+map('n', '<leader>cd', ':Copilot disable<CR>', {desc = 'disable copilot'})
+
 
 
 

@@ -34,6 +34,8 @@ check_and_create_directory() {
 sudo apt update
 sudo apt upgrade -y
 
+check_and_install build-essential
+
 # Install additional Apps
 check_and_install snapd
 # vlc gimp gparted synaptic
@@ -47,7 +49,7 @@ check_and_install snapd
 check_and_install preload
 
 # Improve laptop battery
-check_and_install tlp tlp-rdw
+# check_and_install tlp tlp-rdw
 
 # Add numix theme and icons
 # sudo add-apt-repository ppa:numix/ppa
@@ -76,11 +78,10 @@ check_and_install tlp tlp-rdw
 # Now for the work-related installations
 
 # git
-check_and_install git
+# check_and_install git
 
 # gcc
 sudo apt update
-check_and_install build-essential
 
 # betty
 betty_directory="$HOME/Git_repos/Betty"
@@ -123,7 +124,7 @@ else
 fi
 
 # nvim
-# sudo snap install nvim --classic
+sudo snap install nvim --classic
 
 # vimplug_config
 vimplug_directory="$HOME/.local/share/nvim/site/autoload"
@@ -191,6 +192,13 @@ if [ ! -d "$w3c_validator_directory" ]; then
 else
     echo "W3C-Validator is already installed. Skipping..."
 fi
+
+# Node
+sudo apt install nodejs npm
+
+sudo npm install -g eslint
+sudo npm install -g pyright
+
 
 echo ; echo
 echo "Remember to manually Download: "

@@ -9,12 +9,13 @@
 " set spell
 " set spelllang=en_us
 " z= to see suggestions
-" set clipboard=unnamed
+set clipboard+=unnamedplus
 " Map Ctrl+C to copy to clipboard
 vnoremap <C-c> "+y
 
-" Map Ctrl+V to paste from clipboard
-nnoremap <C-v> "+p
+" Map Ctrl+Shift+V to paste from clipboard
+" nnoremap <C-S-v> "+P
+" nnoremap <C-S-v> "+p
 setlocal keywordprg=pydoc3.10
 autocmd BufWritePre *.c :%s/\s\+$//e 
 autocmd BufWritePre *.py :%s/\s\+$//e 

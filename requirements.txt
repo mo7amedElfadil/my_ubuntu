@@ -7,4 +7,5 @@ pipenv
 SQLAlchemy
 beautifulsoup4
 neovim
+pynvim
 mysqlclient

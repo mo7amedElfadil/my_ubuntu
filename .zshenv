@@ -1,15 +1,167 @@
 #!/bin/bash
+
+function help() {
+	# prints out the help menu for the custom commands
+	echo "Custom commands"
+	echo "--------------------------------------------------------------"
+	echo "activate_venv: Activate a virtual environment"
+	echo "addgit: Add a file to the .gitignore file"
+	echo "bot: Run the bot"
+	echo "cdd: Change directory to a project directory"
+	echo "commit: Add and commit to git"
+	echo "connectbnb: Connect to the BnB server"
+	echo "connectsandbox: Connect to the sandbox server"
+	echo "create_repo: Create a new repository"
+	echo "create_venv: Create a new virtual environment"
+	echo "deactivate_venv: Deactivate a virtual environment"
+	echo "helpcom: Display the help menu"
+	echo "hsh: Run the Shell script"
+	echo "incr: Increment the prefix of files"
+	echo "lazygit: Add, commit and push to git"
+	echo "LexDevEnv: Set the Lexilink development environment"
+	echo "LexFileEnv: Set the Lexilink file environment"
+	echo "LexTestEnv: Set the Lexilink test environment"
+	echo "newproj: Create a new project directory"
+	echo "newt: Create a new task file"
+	echo "pip_installer: Install python modules from a file using pip"
+	echo "rog: Set the keyboard light to blue"
+	echo "run: Run a task file"
+	echo "sqllazy: Lazy SQL commands"
+}
+
+
+# takes a list of files from cmd and incrementes the 
+# prefix of the files by 1 and copies them to the
+# new file name
+# Usage: ./incr.sh 1-file1 2-file2 3-file3
+# Output: 2-file1 3-file2 4-file3
+incr() {
+
+	# Check if at least one file is provided
+	if [ "$#" -lt 1 ]; then
+	  echo "Usage: $0 <list of files>"
+	  exit 1
+	fi
+
+	# Loop through all the arguments (files)
+	for file in "$@"; do
+	  # Extract the prefix and the filename
+	  dirname=$(dirname "$file")
+	  filename=$(basename "$file")
+	  prefix=$(echo "$filename" | grep -o '^[0-9]*')
+	  filename=$(echo "$file" | cut -d'-' -f2-)
+
+
+
+	  # Increment the prefix
+	  new_prefix=$((prefix + 1))
+
+	  # Construct the new filename with path
+	  new_file="${dirname}/${new_prefix}-${filename}"
+
+	  # Copy the file to the new filename
+	  cp "$file" "$new_file"
+
+	  echo "Copied $file to $new_file"
+	done
+}
+
+
+# Installs python modules using pip
+# the script takes in a python file and tries to run it
+# if it fails, it will install the required modules until it runs successfully
+# if the script runs successfully, it will print the output and exit
+# if the script fails, it will print the error message and exit
+#
+# Usage: ./pip_installer.sh <python_file>
+function pip_installer {
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+
+	# check if the user has provided a python file
+	if [ $# -eq 0 ]; then
+		echo -e "${RED}Error: No python file provided${NC}"
+		exit 1
+	fi
+
+	# check if the python file exists
+	if [ ! -f $1 ]; then
+		echo -e "${RED}Error: File $1 not found${NC}"
+		exit 1
+	fi
+
+	# check if the python file has a .py extension
+	if [[ $1 != *.py ]]; then
+		echo -e "${RED}Error: File $1 is not a python file${NC}"
+		exit 1
+	fi
+
+	# check if the python file is executable
+	if [ ! -x $1 ]; then
+		echo -e "${RED}Error: File $1 is not executable${NC}"
+		exit 1
+	fi
+
+
+	# start by installing requests module
+	pip3 install requests
+
+
+	# check if the python file runs successfully
+	if python3 $1; then
+		echo -e "${GREEN}Script ran successfully${NC}"
+		exit 0
+	else
+		# get the error message
+		error_message=$(python3 $1 2>&1)
+		# get the required modules
+		while true; do
+			# get the required modules
+			required_modules=$(echo $error_message | grep -oP "No module named '\K[^']*")
+			# check if there are no required modules
+			if [ -z "$required_modules" ]; then
+				echo -e "${RED}Error: Script failed to run${NC}"
+				echo -e "${RED}$error_message${NC}"
+				exit 1
+			fi
+			# install the required modules
+			for module in $required_modules; do
+				echo -e "${GREEN}Installing $module${NC}"
+				pip3 install $module
+				# check if the module was installed successfully
+				if [ $? -ne 0 ]; then
+					# print error message and exit
+					echo -e "${RED}Error: Failed to install $module${NC}"
+					exit 1
+				fi
+			done
+			# check if the script runs successfully
+			if python3 $1; then
+				echo -e "${GREEN}Script ran successfully${NC}"
+				exit 0
+			else
+				# get the error message
+				error_message=$(python3 $1 2>&1)
+			fi
+		done
+	fi
+}
+
+# adds, commits and pushes to git
 function lazygit() {
 	git add .
 	git commit -a -m "$1"
 	git push
 }
 
+# adds and commits to git
 function commit() {
 	git add .
 	git commit -m "$1"
 }
 
+# creates a new github repository remotely and locally
 function create_repo() {
 	newproj $1
 	rm -rf main_files
@@ -19,28 +171,34 @@ function create_repo() {
 	lazygit "Initial commit"
 }
 
+# runs the custom shell
 function hsh() {
 	she
 }
 
+# creates a new virtual environment
 function create_venv() {
 	python3 -m venv $1
 }
 
+# sets the keyboard light to blue
 function rog() {
 	sudo rogauracore initialize_keyboard
 	sudo rogauracore single_static 00FFFF
 	sudo rogauracore brightness 3
 }
 
+# activates a virtual environment given its path
 function activate_venv() {
 	source $1/bin/activate
 }
 
+# deactivates a virtual environment
 function deactivate_venv() {
 	deactivate
 }
 
+# sets the Lexilink development environment
 function LexDevEnv() {
 	export LEXILINK_MYSQL_USER="lexilink_dev"
 	export LEXLEXILINK_MYSQL_PWD="lexilink_dev_pwd"
@@ -51,6 +209,7 @@ function LexDevEnv() {
 	export LEXLEXILINK_MYSQL_ENV="dev"
 }
 
+# sets the Lexilink test environment
 function LexTestEnv() {
 	export LEXILINK_MYSQL_USER="lexilink_test"
 	export LEXLEXILINK_MYSQL_PWD="lexilink_test_pwd"
@@ -61,11 +220,13 @@ function LexTestEnv() {
 	export LEXLEXILINK_MYSQL_ENV="test"
 }
 
+# sets the Lexilink file environment
 function LexFileEnv() {
 	export LEXILINK_TYPE_STORAGE="file"
 	export LEXILINK_MYSQL_ENV="dev"
 }
 
+# changes directory to a project directory
 function cdd() {
     root="$HOME/alx_se"
 	#check how many arguments are passed
@@ -84,6 +245,7 @@ function cdd() {
 	fi
 }
 
+# Remotely interacts with the discord bot
 function bot()
 {
 	if [ -z "$1" ]; then
@@ -126,20 +288,25 @@ function bot()
 	ssh -i "$sshKEY" "$USER@$IP" "$COMMAND"
 }
 
-
+# Add a file to the .gitignore file to not ignore it
 addgit() {
 	echo "!/$1" >> .gitignore
 }
+
+# Connect to the sandbox server
 connectsandbox() {
 	sshpass -p '2b5a5164165bc7fc06dc' ssh 71dd44fbcc5a@71dd44fbcc5a.36545ba6.alx-cod.online
 
 }
 
-
+# Connect to the BnB server
 connectbnb() {
 	sshpass -p '9964419af7de2b04f883' ssh 0ab8c02e7ebc@0ab8c02e7ebc.f861a72c.alx-cod.online
 }
 
+# Create a new task file with a main file (optional)
+# the task file is created with a template
+# The file can be ran and tested for code style errors after quitting the editor
 newt() {
 	if [[ $1 == *".c" ]] 
 	then 
@@ -238,6 +405,11 @@ sys.path.append(parent_dir)
 	fi
 }
 
+# Creates a new sql database and imports data from a website (optional)
+# the user is prompted to enter the database name, table name 
+# and link to the data
+# the user can choose to create a new database or import data from a website
+# the user is shown the first 10 rows of the table
 sqllazy() {
 	vared -p 'Enter DB name:        
 	>' -c db_name
@@ -262,82 +434,87 @@ sqllazy() {
 	echo "$show_db $tb_name;" | mysql -uroot -p "$db_name" | head
 }
 
-run() {
-	# Run task file
-	# runs the main file of a task file
-	# from main_files directory
-	# the argument is the file number eg 1, 2, 3
-	# eg. the file name is $1-main.js
 
-# Check if an argument is provided
-if [ -z "$1" ]; then
-	echo "Please provide the file number as an argument."
-	return 1
-fi
-# check if input is a number or a file name
-# if number, continue, if file name, get the number at the beginning of the file name
-if [[ ! "$1" =~ ^[0-9]+$ ]]; then
-	number=$(echo "$1" | grep -oE '^[0-9]+')
-	if [ -z "$number" ]; then
-		echo "Error: Invalid file number."
+# Run task file
+# runs the main file of a task file
+# from main_files directory
+# the argument is the file number eg 1, 2, 3
+# eg. the file name is $1-main.js
+run() {
+
+	# Check if an argument is provided
+	if [ -z "$1" ]; then
+		echo "Please provide the file number as an argument."
 		return 1
 	fi
-	# set -- "$number"
-else
-	number=$1
-fi
-echo "number: $number"
-# Construct the command to run the main file
-file=$(ls | grep "$number-" | head -n 1)
-echo "file: $file"
-if [[ "$file" == *.* ]]; then
-	extension=$(echo "$file" | rev | cut -d'.' -f1 | rev)
-else
-	extension="sh"
-fi
-
-
-len=$(echo "$extension" | wc -l)
-if [[ $len -gt 1 ]]; then
-	while IFS= read -r ext; do
-		if [[ $ext == "py" ]]; then
-			extension="py"
-		elif [[ $ext == "js" ]]; then
-			extension="js"
-		elif [[ $ext == "sh" ]]; then
-			extension="sh"
-		else
-			extension="sh"
+	# check if input is a number or a file name
+	# if number, continue, if file name, get the number at the beginning of the file name
+	if [[ ! "$1" =~ ^[0-9]+$ ]]; then
+		number=$(echo "$1" | grep -oE '^[0-9]+')
+		if [ -z "$number" ]; then
+			echo "Error: Invalid file number."
+			return 1
 		fi
-	done <<< "$extension"
-fi
-if [[ $extension == "pp" ]]; then
-	extension="sh"
-fi
-if [[ -f main_files/$number-main.$extension ]]; then
-	command="main_files/$number-main.${extension}"
-elif [[ -f main_files/$number-main.sh ]]; then
-	command="main_files/$number-main.sh"
-else
-	command="$file"
-fi
+		# set -- "$number"
+	else
+		number=$1
+	fi
+	echo "number: $number"
+	# Construct the command to run the main file
+	file=$(ls | grep "$number-" | head -n 1)
+	echo "file: $file"
+	if [[ "$file" == *.* ]]; then
+		extension=$(echo "$file" | rev | cut -d'.' -f1 | rev)
+	else
+		extension="sh"
+	fi
 
-# Check if the file exists before attempting to run it
-if [ ! -f "$command" ]; then
-	echo "Error: File $command not found."
-	return 1
-fi
-# Run the command with arguments
-if [[ $# -gt 1 ]]; then
-	echo "Running ./$command ${@:2}"
-	./$command "${@:2}"  2>/dev/null || sudo ./$command "${@:2}" 2>/dev/null
-else
-	./$command 
-fi 
+
+	len=$(echo "$extension" | wc -l)
+	if [[ $len -gt 1 ]]; then
+		while IFS= read -r ext; do
+			if [[ $ext == "py" ]]; then
+				extension="py"
+			elif [[ $ext == "js" ]]; then
+				extension="js"
+			elif [[ $ext == "sh" ]]; then
+				extension="sh"
+			else
+				extension="sh"
+			fi
+		done <<< "$extension"
+	fi
+	if [[ $extension == "pp" ]]; then
+		extension="sh"
+	fi
+	if [[ -f main_files/$number-main.$extension ]]; then
+		command="main_files/$number-main.${extension}"
+	elif [[ -f main_files/$number-main.sh ]]; then
+		command="main_files/$number-main.sh"
+	else
+		command="$file"
+	fi
+
+	# Check if the file exists before attempting to run it
+	if [ ! -f "$command" ]; then
+		echo "Error: File $command not found."
+		return 1
+	fi
+	# Run the command with arguments
+	if [[ $# -gt 1 ]]; then
+		echo "Running ./$command ${@:2}"
+		./$command "${@:2}"  2>/dev/null || sudo ./$command "${@:2}" 2>/dev/null
+	else
+		./$command 
+	fi 
 }
 
 
 # function to create a new project directory
+# the function takes in the name of the project
+# and creates a new directory with the project name
+# the function also creates a README.md file and a main_files directory
+# the function also creates a .gitignore file with the necessary files
 newproj() {
 	mkdir $1
 	cd $1
