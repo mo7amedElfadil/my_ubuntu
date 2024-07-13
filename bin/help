@@ -1,0 +1,33 @@
+#!/bin/bash
+
+help() {
+	# prints out the help menu for the custom commands
+	echo "Custom commands"
+	echo "--------------------------------------------------------------"
+	echo "activate_venv: Activate a virtual environment"
+	echo "addgit: Add a file to the .gitignore file"
+	echo "bot: Run the bot"
+	echo "cdd: Change directory to a project directory"
+	echo "commit: Add and commit to git"
+	echo "connectbnb: Connect to the BnB server"
+	echo "connectsandbox: Connect to the sandbox server"
+	echo "create_repo: Create a new repository"
+	echo "create_venv: Create a new virtual environment"
+	echo "deactivate_venv: Deactivate a virtual environment"
+	echo "helpcom: Display the help menu"
+	echo "hsh: Run the Shell script"
+	echo "incr: Increment the prefix of files"
+	echo "lazygit: Add, commit and push to git"
+	echo "LexDevEnv: Set the Lexilink development environment"
+	echo "LexFileEnv: Set the Lexilink file environment"
+	echo "LexTestEnv: Set the Lexilink test environment"
+	echo "newproj: Create a new project directory"
+	echo "newt: Create a new task file"
+	echo "pip_installer: Install python modules from a file using pip"
+	echo "rog: Set the keyboard light to blue"
+	echo "run: Run a task file"
+	echo "sqllazy: Lazy SQL commands"
+}
+
+help
+

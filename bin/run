@@ -1,0 +1,79 @@
+#!/bin/bash
+# Run task file
+# runs the main file of a task file
+# from main_files directory
+# the argument is the file number eg 1, 2, 3
+# eg. the file name is $1-main.js
+run() {
+
+	# Check if an argument is provided
+	if [ -z "$1" ]; then
+		echo "Please provide the file number as an argument."
+		return 1
+	fi
+	# check if input is a number or a file name
+	# if number, continue, if file name, get the number at the beginning of the file name
+	# if no number is found, set the number to -1
+	if [[ ! "$1" =~ ^[0-9]+$ ]]; then
+		number=$(echo "$1" | grep -oE '^[0-9]+')
+		if [ -z "$number" ]; then
+			number=-1
+		fi
+	else
+		number=$1
+		# set -- "$number"
+	fi
+	if [ $number -eq -1 ]; then
+		./$1
+		return 0
+	fi
+	# Construct the command to run the main file
+	file=$(ls | grep "$number-" | head -n 1)
+	echo "file: $file"
+	if [[ "$file" == *.* ]]; then
+		extension=$(echo "$file" | rev | cut -d'.' -f1 | rev)
+	else
+		extension="sh"
+	fi
+
+
+	len=$(echo "$extension" | wc -l)
+	if [[ $len -gt 1 ]]; then
+		while IFS= read -r ext; do
+			if [[ $ext == "py" ]]; then
+				extension="py"
+			elif [[ $ext == "js" ]]; then
+				extension="js"
+			elif [[ $ext == "sh" ]]; then
+				extension="sh"
+			else
+				extension="sh"
+			fi
+		done <<< "$extension"
+	fi
+	if [[ $extension == "pp" ]]; then
+		extension="sh"
+	fi
+	if [[ -f main_files/$number-main.$extension ]]; then
+		command="main_files/$number-main.${extension}"
+	elif [[ -f main_files/$number-main.sh ]]; then
+		command="main_files/$number-main.sh"
+	else
+		command="$file"
+	fi
+
+	# Check if the file exists before attempting to run it
+	if [ ! -f "$command" ]; then
+		echo "Error: File $command not found."
+		return 1
+	fi
+	# Run the command with arguments
+	if [[ $# -gt 1 ]]; then
+		echo "Running ./$command ${@:2}"
+		./$command "${@:2}"  2>/dev/null || sudo ./$command "${@:2}" 2>/dev/null
+	else
+		./$command 
+	fi 
+}
+
+

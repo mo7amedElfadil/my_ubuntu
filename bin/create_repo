@@ -1,0 +1,14 @@
+#!/bin/bash
+# creates a new github repository remotely and locally
+function create_repo() {
+	newproj $1
+	rm -rf main_files
+	git init
+	gh repo create $1 --public --source=. --remote=origin
+	git branch -m master main
+	create_precommit
+	lazygit "Initial commit - Creating new repository $1"
+	git push --set-upstream origin main
+}
+
+create_repo "$1"

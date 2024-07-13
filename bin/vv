@@ -1,0 +1,8 @@
+#!/bin/bash
+# open nvim at specific line number
+# Usage: nvimline <line_number> <file>
+function vv() {
+	nvim +"$1" "$2"
+}
+
+vv "$1" "$2"

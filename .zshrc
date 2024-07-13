@@ -86,7 +86,7 @@ alias connectlb="ssh -i ~/.ssh/id_rsa ubuntu@$SERVER3LB"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export PATH="$PATH:$HOME/bin"
-export NODE_PATH=/usr/lib/node_modules
+export PATH="$PATH:$HOME/.local/bin"
 export NODE_PATH=/usr/lib/node_modules
 # export PATH=$PATH:$(npm bin -g)
 export DD_SITE="datadoghq.com"
@@ -222,6 +222,7 @@ alias vimrc="nvim ~/.vimrc"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export PATH=$PATH:/snap/bin
+export PATH=$PATH:/usr/local/go/bin
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

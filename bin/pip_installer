@@ -1,0 +1,83 @@
+#!/bin/bash
+# Installs python modules using pip
+# the script takes in a python file and tries to run it
+# if it fails, it will install the required modules until it runs successfully
+# if the script runs successfully, it will print the output and exit
+# if the script fails, it will print the error message and exit
+#
+# Usage: ./pip_installer.sh <python_file>
+function pip_installer {
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+
+	# check if the user has provided a python file
+	if [ $# -eq 0 ]; then
+		echo -e "${RED}Error: No python file provided${NC}"
+		exit 1
+	fi
+
+	# check if the python file exists
+	if [ ! -f $1 ]; then
+		echo -e "${RED}Error: File $1 not found${NC}"
+		exit 1
+	fi
+
+	# check if the python file has a .py extension
+	if [[ $1 != *.py ]]; then
+		echo -e "${RED}Error: File $1 is not a python file${NC}"
+		exit 1
+	fi
+
+	# check if the python file is executable
+	if [ ! -x $1 ]; then
+		echo -e "${RED}Error: File $1 is not executable${NC}"
+		exit 1
+	fi
+
+
+	# start by installing requests module
+	pip3 install requests
+
+
+	# check if the python file runs successfully
+	if python3 $1; then
+		echo -e "${GREEN}Script ran successfully${NC}"
+		exit 0
+	else
+		# get the error message
+		error_message=$(python3 $1 2>&1)
+		# get the required modules
+		while true; do
+			# get the required modules
+			required_modules=$(echo $error_message | grep -oP "No module named '\K[^']*")
+			# check if there are no required modules
+			if [ -z "$required_modules" ]; then
+				echo -e "${RED}Error: Script failed to run${NC}"
+				echo -e "${RED}$error_message${NC}"
+				exit 1
+			fi
+			# install the required modules
+			for module in $required_modules; do
+				echo -e "${GREEN}Installing $module${NC}"
+				pip3 install $module
+				# check if the module was installed successfully
+				if [ $? -ne 0 ]; then
+					# print error message and exit
+					echo -e "${RED}Error: Failed to install $module${NC}"
+					exit 1
+				fi
+			done
+			# check if the script runs successfully
+			if python3 $1; then
+				echo -e "${GREEN}Script ran successfully${NC}"
+				exit 0
+			else
+				# get the error message
+				error_message=$(python3 $1 2>&1)
+			fi
+		done
+	fi
+}
+
+pip_installer "$1"

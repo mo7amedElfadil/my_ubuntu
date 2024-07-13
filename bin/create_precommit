@@ -1,0 +1,17 @@
+#!/bin/bash
+# creates a precommit file
+# the precommit file is used to run gitleaks
+# before a commit is made
+function create_precommit() {
+	echo """
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.1
+    hooks:
+      - id: gitleaks
+""" > .pre-commit-config.yaml
+	pre-commit autoupdate
+	pre-commit install
+}
+
+create_precommit

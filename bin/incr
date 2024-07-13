@@ -1,0 +1,38 @@
+#!/bin/bash
+# takes a list of files from cmd and incrementes the 
+# prefix of the files by 1 and copies them to the
+# new file name
+# Usage: ./incr.sh 1-file1 2-file2 3-file3
+# Output: 2-file1 3-file2 4-file3
+incr() {
+
+	# Check if at least one file is provided
+	if [ "$#" -lt 1 ]; then
+	  echo "Usage: $0 <list of files>"
+	  exit 1
+	fi
+
+	# Loop through all the arguments (files)
+	for file in "$@"; do
+	  # Extract the prefix and the filename
+	  dirname=$(dirname "$file")
+	  filename=$(basename "$file")
+	  prefix=$(echo "$filename" | grep -o '^[0-9]*')
+	  filename=$(echo "$file" | cut -d'-' -f2-)
+
+
+
+	  # Increment the prefix
+	  new_prefix=$((prefix + 1))
+
+	  # Construct the new filename with path
+	  new_file="${dirname}/${new_prefix}-${filename}"
+
+	  # Copy the file to the new filename
+	  cp "$file" "$new_file"
+
+	  echo "Copied $file to $new_file"
+	done
+}
+
+incr "$@"

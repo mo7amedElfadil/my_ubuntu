@@ -1,0 +1,32 @@
+#!/bin/bash
+# function to create a new project directory
+# the function takes in the name of the project
+# and creates a new directory with the project name
+# the function also creates a README.md file and a main_files directory
+# the function also creates a .gitignore file with the necessary files
+newproj() {
+	mkdir $1
+	cd $1
+	echo "# $1" >> README.md
+	mkdir main_files
+	echo "What language are you using? (c, py, js, sh)"
+	read language
+	if [[ $language == "c" ]]
+	then
+		echo -e "*\n!/*.so\n!/.gitignore\n!/*.h\n!/*.c\n!/*.sh\n!/README.md\n*main.c" >> .gitignore
+	elif [[ $language == "py" ]]
+	then
+		echo -e "*\n!/*.py\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.py" >> .gitignore
+	elif [[ $language == "js" ]]
+	then
+		echo -e "*\n!/*.js\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.js" >> .gitignore
+	elif [[ $language == "sh" ]]
+	then
+		echo -e "*\n!/*.sh\n!/.gitignore\n!/README.md\n!/LICENSE\n*main.sh" >> .gitignore
+	else
+		echo -e "*\n!/.gitignore\n!/README.md\n!/LICENSE" >> .gitignore
+		echo "Make sure to add the file extensions to the .gitignore file"
+	fi
+}
+
+newproj "$1"

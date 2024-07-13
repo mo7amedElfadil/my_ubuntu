@@ -41,13 +41,6 @@ vim.keymap.set('n', '<leader>,', function() require('comment').comment_line() en
 vim.keymap.set('n', '<leader>gq', function () require('sqlcap').capitalize() end,
 {noremap = true, silent = true, desc = 'capitalize sql keywords'})
 
--- copilot keybindings
--- enable copilot by remapping :Copilot enable to <leader>ce
-map('n', '<leader>ce', ':Copilot enable<CR>', {desc = 'enable copilot'})
--- enable copilot by remapping :Copilot disable to <leader>cd
-map('n', '<leader>cd', ':Copilot disable<CR>', {desc = 'disable copilot'})
-
-
 
 
 ---------- IMPORTING REMOTE PLUGINS ----------

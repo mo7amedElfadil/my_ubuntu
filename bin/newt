@@ -1,0 +1,150 @@
+#!/bin/bash
+# Create a new task file with a main file (optional)
+# the task file is created with a template
+# The file can be ran and tested for code style errors after quitting the editor
+newt() {
+	auto_flag=false
+	commit_flag=false
+	file_flag=false
+	main_flag=false
+	run_flag=false
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+	while getopts ":cr" opt; do
+		case ${opt} in
+			a )
+				auto_flag=true
+				;;
+			c )
+				commit_flag=true
+				;;
+			m )
+				main_flag=true
+				;;
+			f )
+				file_flag=true
+				main_flag=true
+				;;
+			h)
+				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+				echo "Options:"
+				echo "  -a: Automatically commit the file using its name"
+				echo "  -c: Commit the file to git"
+				echo "  -f: Main file will be shell script"
+				echo "  -h: Display help menu"
+				echo "  -m: Create a main file"
+				echo "  -r: Run the file"
+				return 1
+				;;
+			r )
+				run_flag=true
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+				return 1
+				;;
+		esac
+	done
+
+	shift $((OPTIND -1))
+
+
+	if [[ $1 == *".c" ]] 
+	then 
+		echo -e "#include \"main.h\"\n/**\n * main - Entry point\n *\n * Return: Always 0 (Success)\n */\nint main(void)\n{\n\n\n\treturn (0);\n}" >>$1
+	elif [[ $1 == *".py" ]] 
+	then
+		echo -e "#!/usr/bin/env python3" >> $1
+		chmod +x $1
+	elif [[ $1 == *".js" ]] 
+	then
+		echo -e "#!/usr/bin/node" >> $1
+		chmod +x $1
+
+	else
+		echo "#!/usr/bin/env bash" >> $1
+		chmod +x $1
+	fi
+	if [[ "$1" == *.* ]]; then
+		extension=$(echo "$1" | rev | cut -d'.' -f1 | rev)
+		if [[ $extension == "py" ]]; then
+			tester=pycodestyle
+		elif [[ $extension == "js" ]]; then
+			tester=semistandard
+		elif [[ $extension == "sh" ]]; then
+			tester=shellcheck
+		elif [[ $extension == "c" ]]; then
+			tester=betty
+		fi
+	else
+		extension="sh"
+	fi
+
+	number=$(echo "$1" | grep -oE '^[0-9]+')
+	
+	if $main_flag;
+	then
+		if $file_flag; then
+			extension="sh"
+		fi
+		main_file=main_files/$number-main.$extension
+		echo "Main file created: $main_file"
+		if [ ! -d "main_files" ]
+		then
+			mkdir main_files
+		fi
+		if [[ $main_file == *".py" ]] 
+		then
+			echo """#!/usr/bin/python3
+import os
+import sys
+
+# Get the current directory of the script
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+# Get the parent directory by joining the current directory with '..'
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+# Add the parent directory to the system path
+sys.path.append(parent_dir)
+""" >> $main_file
+			chmod +x $1
+		elif [[ $main_file == *".js" ]] 
+		then
+			echo "#!/usr/bin/node" >> $main_file
+
+		else
+			if [[ $main_file == *".c" ]] 
+			then 
+				echo -e "#include \"main.h\"\n/**\n * main - Entry point\n *\n * Return: Always 0 (Success)\n */\nint main(void)\n{\n\n\n\treturn (0);\n}" >> $main_file
+			else
+				echo "#!/usr/bin/env bash" >> $main_file
+			fi
+		fi
+
+		chmod +x $main_file
+		nvim $main_file
+	fi
+	nvim $1
+	if $run_flag; then
+		if $main_flag; then
+			./$main_file
+		else
+			./$1
+		fi
+	fi
+	$tester $1
+	if $commit_flag; then
+		if $auto_flag; then
+			lazygit "$1"
+		else
+			echo "Enter commit message: "
+			read message
+			lazygit "$1" "$message"
+		fi
+	fi
+}
+
+newt "$1"

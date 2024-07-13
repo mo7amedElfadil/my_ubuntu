@@ -27,8 +27,15 @@ function help() {
 	echo "rog: Set the keyboard light to blue"
 	echo "run: Run a task file"
 	echo "sqllazy: Lazy SQL commands"
+	echo "vv: Open nvim at a specific line number"
 }
 
+
+# open nvim at specific line number
+# Usage: nvimline <line_number> <file>
+function vv() {
+	nvim +$1 $2
+}
 
 # takes a list of files from cmd and incrementes the 
 # prefix of the files by 1 and copies them to the
@@ -150,8 +157,27 @@ function pip_installer {
 
 # adds, commits and pushes to git
 function lazygit() {
-	git add .
-	git commit -a -m "$1"
+	# check number of arguments
+	while getopts ":h" opt; do
+		case ${opt} in
+			h)
+				echo "Usage: lazygit [<file>] <message>"
+				return 0
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: lazygit [<file>] <message>"
+				return 1
+				;;
+		esac
+	done
+	if [ $# -eq 1 ]; then
+		git add .
+		git commit -a -m "$1"
+	else
+		git add "$1"
+		git commit -a -m "$2"
+	fi
 	git push
 }
 
@@ -161,6 +187,22 @@ function commit() {
 	git commit -m "$1"
 }
 
+# creates a precommit file
+# the precommit file is used to run gitleaks
+# before a commit is made
+function create_precommit() {
+	echo """
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.1
+    hooks:
+      - id: gitleaks
+""" > .pre-commit-config.yaml
+	pre-commit autoupdate
+	pre-commit install
+}
+
+
 # creates a new github repository remotely and locally
 function create_repo() {
 	newproj $1
@@ -168,7 +210,9 @@ function create_repo() {
 	git init
 	gh repo create $1 --public --source=. --remote=origin
 	git branch -m master main
-	lazygit "Initial commit"
+	create_precommit
+	lazygit "Initial commit - Creating new repository $1"
+	git push --set-upstream origin main
 }
 
 # runs the custom shell
@@ -308,6 +352,54 @@ connectbnb() {
 # the task file is created with a template
 # The file can be ran and tested for code style errors after quitting the editor
 newt() {
+	auto_flag=false
+	commit_flag=false
+	file_flag=false
+	main_flag=false
+	run_flag=false
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+	while getopts ":acfhmr" opt; do
+		case ${opt} in
+			a )
+				auto_flag=true
+				;;
+			c )
+				commit_flag=true
+				;;
+			m )
+				main_flag=true
+				;;
+			f )
+				file_flag=true
+				main_flag=true
+				;;
+			h)
+				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+				echo "Options:"
+				echo "  -a: Automatically commit the file using its name"
+				echo "  -c: Commit the file to git"
+				echo "  -f: Main file will be shell script"
+				echo "  -h: Display help menu"
+				echo "  -m: Create a main file"
+				echo "  -r: Run the file"
+				return 1
+				;;
+			r )
+				run_flag=true
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+				return 1
+				;;
+		esac
+	done
+
+	shift $((OPTIND -1))
+
+
 	if [[ $1 == *".c" ]] 
 	then 
 		echo -e "#include \"main.h\"\n/**\n * main - Entry point\n *\n * Return: Always 0 (Success)\n */\nint main(void)\n{\n\n\n\treturn (0);\n}" >>$1
@@ -340,15 +432,12 @@ newt() {
 	fi
 
 	number=$(echo "$1" | grep -oE '^[0-9]+')
-	echo "Main file? y/n/f"
-	read response
-	if [[ $response == "f" ]]
+	
+	if $main_flag;
 	then
-		extension="sh"
-		response="y"
-	fi
-	if [[ $response == "y" ]]
-	then
+		if $file_flag; then
+			extension="sh"
+		fi
 		main_file=main_files/$number-main.$extension
 		echo "Main file created: $main_file"
 		if [ ! -d "main_files" ]
@@ -388,20 +477,23 @@ sys.path.append(parent_dir)
 		nvim $main_file
 	fi
 	nvim $1
-	echo "run file? y/n"
-	read response
-	if [[ $response == "y" ]]
-	then
-		run $(echo "$1" | grep -oE '^[0-9]+') "${@:2}"
+	if $run_flag; then
+		if $main_flag; then
+			./$main_file
+		else
+			./$1
+		fi
 	fi
+	
 	$tester $1
-	echo "Begin Commit process? y/n"
-	read response
-	if [[ $response == "y" ]]
-	then
-		git add $1
-		git commit -m "$1"
-		git push
+	if $commit_flag; then
+		if $auto_flag; then
+			lazygit "$1"
+		else
+			echo "Enter commit message: "
+			read message
+			lazygit "$1" "$message"
+		fi
 	fi
 }
 
@@ -449,17 +541,20 @@ run() {
 	fi
 	# check if input is a number or a file name
 	# if number, continue, if file name, get the number at the beginning of the file name
+	# if no number is found, set the number to -1
 	if [[ ! "$1" =~ ^[0-9]+$ ]]; then
 		number=$(echo "$1" | grep -oE '^[0-9]+')
 		if [ -z "$number" ]; then
-			echo "Error: Invalid file number."
-			return 1
+			number=-1
 		fi
-		# set -- "$number"
 	else
 		number=$1
+		# set -- "$number"
 	fi
-	echo "number: $number"
+	if [ $number -eq -1 ]; then
+		./$1
+		return 0
+	fi
 	# Construct the command to run the main file
 	file=$(ls | grep "$number-" | head -n 1)
 	echo "file: $file"
