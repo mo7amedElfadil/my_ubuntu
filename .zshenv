@@ -28,7 +28,7 @@ function help() {
 	echo "rog: Set the keyboard light to blue"
 	echo "run: Run a task file"
 	echo "sqllazy: Lazy SQL commands"
-	echo "vf: Open nvim to fzf result"
+	echo "fuzzyvim: Open nvim to fzf result"
 	echo "vv: Open nvim at a specific line number"
 }
 
@@ -39,7 +39,7 @@ function fuzzyfind() {
 	grep -rnl "$query" . | fzf --preview "grep --color=always -n '$query' {}"
 }
 
-function vf() {
+function fuzzyvim() {
     # Open nvim to fzf result. The function takes in a string to search for
 	# add option -o to open in neo vim
 	# add option -m for multiselect in fzf
@@ -52,7 +52,7 @@ function vf() {
 	search_flag=false
 	
 	help_message() {
-		echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
 		echo "o: open the files in nvim" >&2
 		echo "m: allow multiselect in fzf (use tab to select)" >&2
 		echo "p: preview the files in fzf" >&2
@@ -83,13 +83,13 @@ function vf() {
 				;;
             \? )
                 echo "Invalid option: -$OPTARG" >&2
-                echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
 				echo "Use -h for help" >&2
                 return 1
                 ;;
             : )
                 echo "Option -$OPTARG requires an argument." >&2
-                echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
 				echo "Use -h for help" >&2
                 return 1
                 ;;
@@ -100,7 +100,7 @@ function vf() {
 
 	if [ $search_flag = true ] && [ -z "$query" ]; then
 		echo "Option -s requires a query argument." >&2
-        echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+        echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
 		return 1
 	fi
 	
@@ -126,7 +126,7 @@ function vf() {
 }
 
 
-kp() {
+kill_process() {
     # Define color variables
     RED='\033[1;31m'
     YELLOW='\033[1;33m'
