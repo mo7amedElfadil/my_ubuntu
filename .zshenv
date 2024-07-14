@@ -14,6 +14,7 @@ function help() {
 	echo "create_repo: Create a new repository"
 	echo "create_venv: Create a new virtual environment"
 	echo "deactivate_venv: Deactivate a virtual environment"
+	echo "fuzzyfind: Search for a string in files and preview the results using fzf"
 	echo "helpcom: Display the help menu"
 	echo "hsh: Run the Shell script"
 	echo "incr: Increment the prefix of files"
@@ -27,7 +28,149 @@ function help() {
 	echo "rog: Set the keyboard light to blue"
 	echo "run: Run a task file"
 	echo "sqllazy: Lazy SQL commands"
+	echo "vf: Open nvim to fzf result"
 	echo "vv: Open nvim at a specific line number"
+}
+
+function fuzzyfind() {
+	# search for a string in files and preview the results using fzf
+	# the function takes in a string to search for
+	query=$1
+	grep -rnl "$query" . | fzf --preview "grep --color=always -n '$query' {}"
+}
+
+function vf() {
+    # Open nvim to fzf result. The function takes in a string to search for
+	# add option -o to open in neo vim
+	# add option -m for multiselect in fzf
+	# add option -p to preview the files in fzf
+	# add option -h to display the help menu
+	# add option -s to search for a string in the files
+	
+	# Define flags
+	nvim_flag=false
+	search_flag=false
+	
+	help_message() {
+		echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		echo "o: open the files in nvim" >&2
+		echo "m: allow multiselect in fzf (use tab to select)" >&2
+		echo "p: preview the files in fzf" >&2
+		echo "s: search for a string in the files using grep before the fzf" >&2
+		echo "h: display the help menu" >&2
+		return 0
+	}
+
+	fzf_command="fzf"
+	while getopts ":omps:h" opt; do 
+		case ${opt} in
+			o)
+				nvim_flag=true
+				;;
+			m)
+				fzf_command+=" -m"
+				;;
+			p)
+				fzf_command+=" --preview 'bat --color=always {}'"
+				;;
+			s)
+				search_flag=true
+				query=$OPTARG
+				;;
+			h)
+				help_message
+				return 0
+				;;
+            \? )
+                echo "Invalid option: -$OPTARG" >&2
+                echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+				echo "Use -h for help" >&2
+                return 1
+                ;;
+            : )
+                echo "Option -$OPTARG requires an argument." >&2
+                echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+				echo "Use -h for help" >&2
+                return 1
+                ;;
+		esac
+	done
+	shift $((OPTIND -1))
+
+
+	if [ $search_flag = true ] && [ -z "$query" ]; then
+		echo "Option -s requires a query argument." >&2
+        echo "Usage: vf [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		return 1
+	fi
+	
+	echo 'fzf command: ' $fzf_command
+
+	if [ $search_flag = true ]; then
+		files=$(grep -rnl "$query" . | eval "$fzf_command")
+	else
+		files=$(eval "$fzf_command")
+	fi
+	
+
+	if [ -n "$files" ]; then
+		if [ $nvim_flag = true ] ; then
+			echo "Opening files..."
+			nvim -p $(echo "$files")
+		else
+			echo "$files"
+		fi
+	else
+		echo "No files selected."
+	fi
+}
+
+
+kp() {
+    # Define color variables
+    RED='\033[1;31m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[1;34m'
+    GREEN='\033[1;32m'
+    RESET='\033[0m'
+
+    if [ -z "$1" ]; then
+        echo -e "${RED}Usage: kill_process <process_name>${RESET}"
+        return 1
+    fi
+
+    process_name=$1
+    processes=$(ps aux | grep -i "$process_name" | grep -v "grep" | grep -v "$0")
+
+    if [ -z "$processes" ]; then
+        echo -e "${RED}No processes found matching '$process_name'.${RESET}"
+        return 1
+    fi
+
+    selected_process=$(echo "$processes" | fzf --header="Select a process to kill" --no-sort --height=20%)
+
+    if [ -z "$selected_process" ]; then
+        echo -e "${YELLOW}No process selected.${RESET}"
+        return 1
+    fi
+
+    pid=$(echo "$selected_process" | awk '{print $2}')
+    echo -e "${BLUE}Killing process with PID $pid using SIGTERM...${RESET}"
+    kill "$pid"
+
+    # Check if the process is still running and if so, use SIGKILL
+    sleep 2
+    if ps -p "$pid" > /dev/null; then
+        echo -e "${YELLOW}Process $pid did not terminate. Using SIGKILL...${RESET}"
+        sudo kill -9 "$pid"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}Process $pid killed successfully with SIGKILL.${RESET}"
+        else
+            echo -e "${RED}Failed to kill process $pid with SIGKILL.${RESET}"
+        fi
+    else
+        echo -e "${GREEN}Process $pid terminated successfully.${RESET}"
+    fi
 }
 
 

@@ -1,0 +1,9 @@
+#!/bin/bash
+function fuzzyfind() {
+	# search for a string in files and preview the results using fzf
+	# the function takes in a string to search for
+	query=$1
+	grep -rnl "$query" . | fzf --preview "grep --color=always -n '$query' {}"
+}
+
+fuzzyfind $1
