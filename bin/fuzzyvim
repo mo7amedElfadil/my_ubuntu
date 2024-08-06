@@ -5,24 +5,27 @@ function fuzzyvim() {
 	# add option -m for multiselect in fzf
 	# add option -p to preview the files in fzf
 	# add option -h to display the help menu
+	# add option -r to search from home directory
 	# add option -s to search for a string in the files
-	
+	echo "fuzzyvim"
 	# Define flags
 	nvim_flag=false
 	search_flag=false
 	
 	help_message() {
-		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-r] [-s <query>]" >&2
 		echo "o: open the files in nvim" >&2
 		echo "m: allow multiselect in fzf (use tab to select)" >&2
 		echo "p: preview the files in fzf" >&2
+		echo "r: search from the home directory" >&2
 		echo "s: search for a string in the files using grep before the fzf" >&2
 		echo "h: display the help menu" >&2
 		return 0
 	}
 
 	fzf_command="fzf"
-	while getopts ":omps:h" opt; do 
+	grep_command="grep -rnl ."
+	while getopts ":omprs:h" opt; do 
 		case ${opt} in
 			o)
 				nvim_flag=true
@@ -33,6 +36,10 @@ function fuzzyvim() {
 			p)
 				fzf_command+=" --preview 'bat --color=always {}'"
 				;;
+			r)
+				grep_command="grep -rnl ~/"
+				;;
+
 			s)
 				search_flag=true
 				query=$OPTARG
@@ -67,7 +74,8 @@ function fuzzyvim() {
 	echo 'fzf command: ' $fzf_command
 
 	if [ $search_flag = true ]; then
-		files=$(grep -rnl "$query" . | eval "$fzf_command")
+		files=$(eval "$grep_command $query | eval $fzf_command")
+		# files=$(grep -rnl "$query" ~/ | eval "$fzf_command")
 	else
 		files=$(eval "$fzf_command")
 	fi

@@ -86,7 +86,7 @@ Plug('preservim/nerdtree', { on = 'NERDTreeToggle'});
 Plug('tpope/vim-fireplace', { ['for'] = 'clojure' });
 Plug 'stevearc/aerial.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug('nvim-telescope/telescope.nvim', { ['tag'] = '0.1.6' });
+Plug('nvim-telescope/telescope.nvim', { ['tag'] = '0.1.8' });
 Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'});
 
 -- Using a non-default branch

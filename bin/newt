@@ -2,16 +2,21 @@
 # Create a new task file with a main file (optional)
 # the task file is created with a template
 # The file can be ran and tested for code style errors after quitting the editor
+
+# Create a new task file with a main file (optional)
+# the task file is created with a template
+# The file can be ran and tested for code style errors after quitting the editor
 newt() {
 	auto_flag=false
 	commit_flag=false
 	file_flag=false
 	main_flag=false
 	run_flag=false
+	codestyle_flag=false
 	RED='\033[0;31m'
 	GREEN='\033[0;32m'
 	NC='\033[0m' # No Color
-	while getopts ":cr" opt; do
+	while getopts ":acfhmrs" opt; do
 		case ${opt} in
 			a )
 				auto_flag=true
@@ -40,6 +45,9 @@ newt() {
 			r )
 				run_flag=true
 				;;
+			s )
+				codestyle_flag=true
+				;;
 			\? )
 				echo "Invalid option: $OPTARG" 1>&2
 				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
@@ -50,6 +58,12 @@ newt() {
 
 	shift $((OPTIND -1))
 
+	
+	if [ -z "$1" ]; then
+		echo -e "${RED}Error: No file provided${NC}"
+		echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+		return 1
+	fi
 
 	if [[ $1 == *".c" ]] 
 	then 
@@ -135,7 +149,9 @@ sys.path.append(parent_dir)
 			./$1
 		fi
 	fi
-	$tester $1
+	if $codestyle_flag; then
+		$tester $1
+	fi
 	if $commit_flag; then
 		if $auto_flag; then
 			lazygit "$1"

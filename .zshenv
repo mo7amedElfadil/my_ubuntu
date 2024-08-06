@@ -23,6 +23,7 @@ function help() {
 	echo "LexFileEnv: Set the Lexilink file environment"
 	echo "LexTestEnv: Set the Lexilink test environment"
 	echo "newproj: Create a new project directory"
+	echo "newcat: Create a new directory or file"
 	echo "newt: Create a new task file"
 	echo "pip_installer: Install python modules from a file using pip"
 	echo "rog: Set the keyboard light to blue"
@@ -30,6 +31,95 @@ function help() {
 	echo "sqllazy: Lazy SQL commands"
 	echo "fuzzyvim: Open nvim to fzf result"
 	echo "vv: Open nvim at a specific line number"
+}
+
+function newcat() {
+	# contatenates words with a separator '_' and creates a directory or file
+	# the function takes in a string of words from the command line
+	# if the -d option is provided, create a directory with the concatenated words
+	# if the -f option is provided, create a file with the concatenated words
+	# if the -e option is provided, add a file extension that the user provides
+	# if the -h option is provided, display the help menu
+	#
+
+	# Define color variables
+	RED='\033[1;31m'
+	YELLOW='\033[1;33m'
+	BLUE='\033[1;34m'
+	GREEN='\033[1;32m'
+	RESET='\033[0m'
+	
+	# Check if no arguments are provided
+	if [ $# -eq 0 ]; then
+		echo -e "${RED}Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>${RESET}"
+		return 1
+	fi
+	
+	# Define flags
+	dir_flag=false
+	file_flag=false
+	extension_flag=false
+
+	# Define the separator
+	separator='_'
+
+	while getopts ":dfe:h" opt; do
+		case ${opt} in
+			d)
+				dir_flag=true
+				;;
+			f)
+				file_flag=true
+				;;
+			e)
+				extension_flag=true
+				extension=$OPTARG
+				;;
+			h)
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				echo "Options:"
+				echo "  -d: Create a directory"
+				echo "  -f: Create a file"
+				echo "  -e: Add a file extension"
+				echo "  -h: Display the help menu"
+				return 0
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				return 1
+				;;
+			: )
+				echo "Option -$OPTARG requires an argument." 1>&2
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				return 1
+				;;
+		esac
+	done
+	shift $((OPTIND -1))
+
+	# concatenate the words with '_'
+	# and return the result
+	# for word in "$@"; do
+	# 	result+="${word}_"
+	# done
+    result=$(echo "$*" | tr ' ' '_')
+	result=$(echo "$result" | tr '[:upper:]' '[:lower:]')
+
+	if [ $dir_flag = true ]; then
+		newproj "$result"
+		echo -e "${GREEN}Directory $result created successfully.${RESET}"
+	elif [ $file_flag = true ]; then
+		if [ $extension_flag = true ]; then
+			newt "$result.$extension"
+		else
+			newt "$result"
+		fi
+		echo -e "${GREEN}File $result created successfully.${RESET}"
+	else
+		echo "$result"
+	fi
+
 }
 
 function fuzzyfind() {
@@ -45,24 +135,28 @@ function fuzzyvim() {
 	# add option -m for multiselect in fzf
 	# add option -p to preview the files in fzf
 	# add option -h to display the help menu
+	# add option -r to search from home directory
 	# add option -s to search for a string in the files
-	
+	echo "fuzzyvim rc"
 	# Define flags
 	nvim_flag=false
 	search_flag=false
 	
 	help_message() {
-		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-r] [-s <query>]" >&2
 		echo "o: open the files in nvim" >&2
 		echo "m: allow multiselect in fzf (use tab to select)" >&2
 		echo "p: preview the files in fzf" >&2
+		echo "r: search from the home directory" >&2
 		echo "s: search for a string in the files using grep before the fzf" >&2
 		echo "h: display the help menu" >&2
 		return 0
 	}
 
 	fzf_command="fzf"
-	while getopts ":omps:h" opt; do 
+	grep_command="grep -rnl"
+	grep_location="."
+	while getopts ":omprs:h" opt; do 
 		case ${opt} in
 			o)
 				nvim_flag=true
@@ -73,6 +167,10 @@ function fuzzyvim() {
 			p)
 				fzf_command+=" --preview 'bat --color=always {}'"
 				;;
+			r)
+				grep_location="~/"
+				;;
+
 			s)
 				search_flag=true
 				query=$OPTARG
@@ -107,7 +205,8 @@ function fuzzyvim() {
 	echo 'fzf command: ' $fzf_command
 
 	if [ $search_flag = true ]; then
-		files=$(grep -rnl "$query" . | eval "$fzf_command")
+		files=$(eval "$grep_command" "$query" "$grep_location" | eval "$fzf_command")
+		# files=$(grep -rnl "$query" ~/ | eval "$fzf_command")
 	else
 		files=$(eval "$fzf_command")
 	fi
@@ -133,6 +232,25 @@ kill_process() {
     BLUE='\033[1;34m'
     GREEN='\033[1;32m'
     RESET='\033[0m'
+	
+	help_message() {
+		echo "Usage: kill_process <process_name>"
+		return 0
+	}
+
+	while getopts ":h" opt; do
+		case ${opt} in
+			h)
+				help_message
+				return 0
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				help_message
+				return 1
+				;;
+		esac
+	done
 
     if [ -z "$1" ]; then
         echo -e "${RED}Usage: kill_process <process_name>${RESET}"
@@ -500,10 +618,11 @@ newt() {
 	file_flag=false
 	main_flag=false
 	run_flag=false
+	codestyle_flag=false
 	RED='\033[0;31m'
 	GREEN='\033[0;32m'
 	NC='\033[0m' # No Color
-	while getopts ":acfhmr" opt; do
+	while getopts ":acfhmrs" opt; do
 		case ${opt} in
 			a )
 				auto_flag=true
@@ -519,7 +638,7 @@ newt() {
 				main_flag=true
 				;;
 			h)
-				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+				echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] [-s] <file>"
 				echo "Options:"
 				echo "  -a: Automatically commit the file using its name"
 				echo "  -c: Commit the file to git"
@@ -527,10 +646,14 @@ newt() {
 				echo "  -h: Display help menu"
 				echo "  -m: Create a main file"
 				echo "  -r: Run the file"
+				echo "  -s: Check the file for code style errors"
 				return 1
 				;;
 			r )
 				run_flag=true
+				;;
+			s )
+				codestyle_flag=true
 				;;
 			\? )
 				echo "Invalid option: $OPTARG" 1>&2
@@ -542,6 +665,12 @@ newt() {
 
 	shift $((OPTIND -1))
 
+	
+	if [ -z "$1" ]; then
+		echo -e "${RED}Error: No file provided${NC}"
+		echo "Usage: newt [-a] [-c] [-f] [-h] [-m] [-r] <file>"
+		return 1
+	fi
 
 	if [[ $1 == *".c" ]] 
 	then 
@@ -627,8 +756,9 @@ sys.path.append(parent_dir)
 			./$1
 		fi
 	fi
-	
-	$tester $1
+	if $codestyle_flag; then
+		$tester $1
+	fi
 	if $commit_flag; then
 		if $auto_flag; then
 			lazygit "$1"

@@ -1,0 +1,92 @@
+#!/bin/bash
+
+function newcat() {
+	# contatenates words with a separator '_' and creates a directory or file
+	# the function takes in a string of words from the command line
+	# if the -d option is provided, create a directory with the concatenated words
+	# if the -f option is provided, create a file with the concatenated words
+	# if the -e option is provided, add a file extension that the user provides
+	# if the -h option is provided, display the help menu
+	#
+
+	# Define color variables
+	RED='\033[1;31m'
+	YELLOW='\033[1;33m'
+	BLUE='\033[1;34m'
+	GREEN='\033[1;32m'
+	RESET='\033[0m'
+	
+	# Check if no arguments are provided
+	if [ $# -eq 0 ]; then
+		echo -e "${RED}Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>${RESET}"
+		return 1
+	fi
+	
+	# Define flags
+	dir_flag=false
+	file_flag=false
+	extension_flag=false
+
+	# Define the separator
+	separator='_'
+
+	while getopts ":dfe:h" opt; do
+		case ${opt} in
+			d)
+				dir_flag=true
+				;;
+			f)
+				file_flag=true
+				;;
+			e)
+				extension_flag=true
+				extension=$OPTARG
+				;;
+			h)
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				echo "Options:"
+				echo "  -d: Create a directory"
+				echo "  -f: Create a file"
+				echo "  -e: Add a file extension"
+				echo "  -h: Display the help menu"
+				return 0
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				return 1
+				;;
+			: )
+				echo "Option -$OPTARG requires an argument." 1>&2
+				echo "Usage: newcat [-d] [-f] [-e <extension>] [-h] <word1> <word2> ... <wordn>"
+				return 1
+				;;
+		esac
+	done
+	shift $((OPTIND -1))
+
+	# concatenate the words with '_'
+	# and return the result
+	# for word in "$@"; do
+	# 	result+="${word}_"
+	# done
+    result=$(echo "$*" | tr ' ' '_')
+	result=$(echo "$result" | tr '[:upper:]' '[:lower:]')
+
+	if [ $dir_flag = true ]; then
+		newproj "$result"
+		echo -e "${GREEN}Directory $result created successfully.${RESET}"
+	elif [ $file_flag = true ]; then
+		if [ $extension_flag = true ]; then
+			newt "$result.$extension"
+		else
+			newt "$result"
+		fi
+		echo -e "${GREEN}File $result created successfully.${RESET}"
+	else
+		echo "$result"
+	fi
+
+}
+
+newcat "$@"

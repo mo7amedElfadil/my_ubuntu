@@ -1,4 +1,5 @@
 alias v="nvim"
+alias z="exec zsh"
 alias cdhigh="cd ~/alx_se/alx-higher_level_programming"
 alias cdlow="cd ~/alx_se/alx-low_level_programming"
 alias cdmon="cd ~/alx_se/monty"

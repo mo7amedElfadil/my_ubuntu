@@ -14,7 +14,7 @@ set clipboard+=unnamedplus
 vnoremap <C-c> "+y
 
 " Map Ctrl+Shift+V to paste from clipboard
-" nnoremap <C-S-v> "+P
+nnoremap <C-S-v> "+P
 " nnoremap <C-S-v> "+p
 setlocal keywordprg=pydoc3.10
 autocmd BufWritePre *.c :%s/\s\+$//e 
