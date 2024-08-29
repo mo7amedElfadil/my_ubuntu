@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+function t() {
+	tree -I 'node_modules|dist|build|__pycache__|.git|.vscode|.idea|.venv|venv|env'
+}
+
+t

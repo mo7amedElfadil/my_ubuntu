@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# Function to display help message
+show_help() {
+    cat << EOF
+Usage: $0 [OPTIONS]
+
+Options:
+  -c    Create a new tmux session.
+  -a    Attach to an existing tmux session.
+  -v    View the list of tmux sessions.
+  -k    Kill all running tmux sessions.
+  -h    Display this help message.
+
+Example:
+  $0 -c   # Create a new tmux session
+  $0 -a   # Attach to an existing tmux session
+  $0 -v   # View the list of tmux sessions
+  $0 -k   # Kill all tmux sessions
+EOF
+}
+
+# Function to create a new tmux session
+create_session() {
+	if [ -z "$1" ]; then
+		echo "Session name is required."
+		exit 1
+	fi
+	SESSION_NAME=$1
+    read -p "Enter command to run in session: " COMMAND
+
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+		window_count=$(tmux list-windows -t "$SESSION_NAME" | wc -l) 
+		name="w$window_count"
+		tmux new-window -d -t "$SESSION_NAME" -n "$name" "$COMMAND"
+		echo "Created new window $name in session $SESSION_NAME."
+    else
+        tmux new-session -d -s "$SESSION_NAME" -n 'w0' "$COMMAND"
+        echo "Created and started session $SESSION_NAME."
+    fi
+}
+
+# Function to attach to an existing tmux session
+attach_session() {
+	if [ -z "$1" ]; then
+		tmux a
+	fi
+	SESSION_NAME=$1
+
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        tmux attach-session -t "$SESSION_NAME"
+    else
+        echo "Session $SESSION_NAME does not exist."
+    fi
+}
+
+# Function to view the list of tmux sessions
+view_sessions() {
+    echo "Available tmux sessions:"
+    tmux list-sessions
+}
+
+# Function to kill all tmux sessions
+kill_sessions() {
+    tmux kill-server
+    echo "All tmux sessions have been killed."
+}
+
+# Main script logic
+while getopts "c:avkh" opt; do
+    case $opt in
+        c)
+            create_session $OPTARG
+            ;;
+        a)
+            attach_session $OPTARG
+            ;;
+        v)
+            view_sessions
+            ;;
+        k)
+            kill_sessions
+            ;;
+		h)
+			show_help
+			exit 0
+			;;
+        \?)
+			show_help
+            exit 1
+            ;;
+    esac
+done
+
+# If no options are provided, display usage
+if [ $OPTIND -eq 1 ]; then
+	show_help
+    exit 1
+fi
+

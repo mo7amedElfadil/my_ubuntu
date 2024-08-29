@@ -10,6 +10,10 @@
 " set spelllang=en_us
 " z= to see suggestions
 set clipboard+=unnamedplus
+
+" set leader
+let mapleader = ","
+" autoimport
 " Map Ctrl+C to copy to clipboard
 vnoremap <C-c> "+y
 
@@ -21,8 +25,18 @@ autocmd BufWritePre *.c :%s/\s\+$//e
 autocmd BufWritePre *.py :%s/\s\+$//e 
 autocmd BufWritePre *.html :%s/\s\+$//e 
 autocmd BufWritePre *.js :%s/\s\+$//e 
+autocmd BufWritePre *.ts :%s/\s\+$//e 
 autocmd BufWritePre *.css :%s/\s\+$//e 
 autocmd BufWritePre *.sql :%s/\s\+$//e 
+
+" find and replace
+command! -bang -nargs=* Find call fzf#vim#grep(
+      \ 'rg --column --line-number --no-heading --fixed-strings --follow --hidden --glob "!{.git/*,*.lock}" --color "always" -- ' .
+      \ shellescape(<q-args>), 1,
+      \ <bang>0)
+
+" remap to <leader>fr
+nnoremap <leader>fr :Find<CR>
 
 augroup custom_indentation
 	autocmd!
@@ -34,6 +48,22 @@ augroup custom_indentation
 	autocmd Filetype javascript,javascriptreact,typescriptreact,typescript setlocal ts=2 sw=2 expandtab
 	" for js/coffee/jade files, 4 spaces
 augroup END
+
+" lazygit
+nnoremap <silent> <leader>gg :LazyGit<CR>
+let g:lazygit_floating_window_winblend = 0 " transparency of floating window
+let g:lazygit_floating_window_scaling_factor = 0.9 " scaling factor for floating window
+let g:lazygit_floating_window_border_chars = ['╭','─', '╮', '│', '╯','─', '╰', '│'] " customize lazygit popup window border characters
+let g:lazygit_floating_window_use_plenary = 1 " use plenary.nvim to manage floating window if available
+
+" let g:lazygit_use_custom_config_file_path = 0 " config file path is evaluated if this value is 1
+" let g:lazygit_config_file_path = '' " custom config file path
+" OR
+" let g:lazygit_config_file_path = [] " list of custom config file paths
+" autocmd BufEnter * :lua require('lazygit.utils').project_root_dir()
+
+" git signs
+set statusline+=%{get(b:,'gitsigns_status','')}
 
 " toggle folding
 :set foldmethod=indent
@@ -70,11 +100,13 @@ highlight Normal ctermfg=grey ctermbg=black guifg=grey guibg=black
 
 " colorscheme tokyonight
 " random colors
-colorscheme tokyonight-night
 " colorscheme tokyonight-storm
 " colorscheme tokyonight-day
 " colorscheme tokyonight-moon
-
+" old theme:
+" colorscheme tokyonight-night
+" current theme:
+:colorscheme catppuccin-mocha " catppuccin catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 
 set smartindent
 " set cindent
@@ -93,7 +125,6 @@ let g:ycm_clangd_uses_ycmd_caching = 0
 " Use installed clangd, not YCM-bundled clangd which doesn't get updates.
 let g:ycm_clangd_binary_path = exepath("clangd")
 " set leader key to space
-let mapleader = ","
 
 
 " toggle buffers

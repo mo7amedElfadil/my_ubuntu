@@ -122,6 +122,10 @@ function newcat() {
 
 }
 
+function t() {
+	tree -I 'node_modules|dist|build|__pycache__|.git|.vscode|.idea|.venv|venv|env'
+}
+
 function fuzzyfind() {
 	# search for a string in files and preview the results using fzf
 	# the function takes in a string to search for
@@ -136,8 +140,8 @@ function fuzzyvim() {
 	# add option -p to preview the files in fzf
 	# add option -h to display the help menu
 	# add option -r to search from home directory
+	# add option -f to search for a string in the files, preview, allow multiselect in fzf
 	# add option -s to search for a string in the files
-	echo "fuzzyvim rc"
 	# Define flags
 	nvim_flag=false
 	search_flag=false
@@ -149,14 +153,15 @@ function fuzzyvim() {
 		echo "p: preview the files in fzf" >&2
 		echo "r: search from the home directory" >&2
 		echo "s: search for a string in the files using grep before the fzf" >&2
+		echo "f: search for a string, preview, allow multiselect in the files using grep before the fzf" >&2
 		echo "h: display the help menu" >&2
 		return 0
 	}
 
 	fzf_command="fzf"
-	grep_command="grep -rnl"
+	grep_command="grep -rnl --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=build --exclude-dir=__pycache__"
 	grep_location="."
-	while getopts ":omprs:h" opt; do 
+	while getopts ":omprs:hf:" opt; do 
 		case ${opt} in
 			o)
 				nvim_flag=true
@@ -170,7 +175,13 @@ function fuzzyvim() {
 			r)
 				grep_location="~/"
 				;;
-
+			f)
+				fzf_command+=" -m"
+				fzf_command+=" --preview 'bat --color=always {}'"
+				nvim_flag=true
+				search_flag=true
+				query=$OPTARG
+				;;
 			s)
 				search_flag=true
 				query=$OPTARG
@@ -181,13 +192,13 @@ function fuzzyvim() {
 				;;
             \? )
                 echo "Invalid option: -$OPTARG" >&2
-                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
+                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-f <query>] [-s <query>]" >&2
 				echo "Use -h for help" >&2
                 return 1
                 ;;
             : )
                 echo "Option -$OPTARG requires an argument." >&2
-                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
+                echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-f <query>] [-s <query>]" >&2
 				echo "Use -h for help" >&2
                 return 1
                 ;;
@@ -198,11 +209,10 @@ function fuzzyvim() {
 
 	if [ $search_flag = true ] && [ -z "$query" ]; then
 		echo "Option -s requires a query argument." >&2
-        echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-s <query>]" >&2
+		echo "Usage: fuzzyvim [-o] [-m] [-p] [-h] [-f <query>] [-s <query>]" >&2
 		return 1
 	fi
 	
-	echo 'fzf command: ' $fzf_command
 
 	if [ $search_flag = true ]; then
 		files=$(eval "$grep_command" "$query" "$grep_location" | eval "$fzf_command")
@@ -223,7 +233,6 @@ function fuzzyvim() {
 		echo "No files selected."
 	fi
 }
-
 
 kill_process() {
     # Define color variables

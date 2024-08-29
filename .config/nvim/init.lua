@@ -49,14 +49,14 @@ vim.call('plug#begin');
 
 -- themesthemesthemesthemes
 Plug 'folke/tokyonight.nvim'
-
 Plug 'https://github.com/rafi/awesome-vim-colorschemes'
+-- image preview
+-- Plug 'edluffy/hologram.nvim'
 
 -- neovim lsp config
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
-
 -- auto completion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -72,11 +72,20 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips'
 Plug 'dcampos/nvim-snippy'-- For snippy users.
 Plug 'dcampos/cmp-snippy'
 
+-- git decorations implemented
+Plug 'lewis6991/gitsigns.nvim'
+
+
+
 Plug 'junegunn/vim-easy-align'
 
 -- Any valid git URL is allowed
 Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-
+Plug 'kdheepak/lazygit.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'folke/noice.nvim'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'rcarriga/nvim-notify'
 -- Multiple Plug commands can be written in a single line using | separators
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -85,10 +94,10 @@ Plug 'honza/vim-snippets'
 Plug('preservim/nerdtree', { on = 'NERDTreeToggle'});
 Plug('tpope/vim-fireplace', { ['for'] = 'clojure' });
 Plug 'stevearc/aerial.nvim'
-Plug 'nvim-lua/plenary.nvim'
 Plug('nvim-telescope/telescope.nvim', { ['tag'] = '0.1.8' });
 Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'});
 
+Plug('catppuccin/nvim', { ['as'] = 'catppuccin' });
 -- Using a non-default branch
 Plug('rdnetto/YCM-Generator', { branch = 'stable' })
 
@@ -133,6 +142,93 @@ require('auto_cmp')
 -- KEY BINDINGS --
 require('keybindings')
 
+-- VIM GIT SIGNS --
+require('gitsigns').setup()
+-- require('hologram').setup{
+-- 	width = 80,
+-- 	height = 60,
+--     auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+-- }
+require('telescope').load_extension('lazygit')
 
+require('noice').setup({
+  views = {
+    cmdline_popup = {
+      position = {
+        row = 20,
+        col = "50%",
+      },
+      size = {
+        width = "auto",
+        height = "auto",
+      },
+    },
+    popupmenu = {
+      relative = "editor",
+      position = {
+        row = 23,
+        col = "50%",
+      },
+      size = {
+        width = 60,
+        height = 10,
+      },
+      border = {
+        style = "rounded",
+        padding = { 0, 1 },
+      },
+      win_options = {
+        winhighlight = { Normal = "Normal", FloatBorder = "DiagnosticInfo" },
+      },
+    },
+  },
+  lsp = {
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  routes = {
+    {
+      filter = {
+        event = "msg_show",
+        any = {
+          { find = "%d+L, %d+B" },
+          { find = "; after #%d+" },
+          { find = "; before #%d+" },
+        },
+      },
+      view = "mini",
+    },
+    {
+      filter = { event = "notify", find = "No information available" },
+      opts = { skip = true },
+    },
+    {
+      filter = {
+        event = "lsp",
+        kind = "progress",
+        cond = function(message)
+          local client = vim.tbl_get(message.opts, "progress", "client")
+          return client == "lua_ls"
+        end,
+      },
+      opts = { skip = true },
+    },
+  },
+  presets = {
+    lsp_doc_border = true,
+    bottom_search = true,
+    command_palette = true,
+    long_message_to_split = true,
+    inc_rename = true,
+  },
+})
+
+-- Configure nvim-notify
+require('notify').setup({
+  timeout = 800, -- Adjust this value as needed
+})
 -- source some vim config
 vim.cmd("source ~/.vimrc");

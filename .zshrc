@@ -1,4 +1,9 @@
 alias v="nvim"
+alias c="clear"
+alias h="history"
+alias s="git status"
+alias p="git push"
+alias cat="bat"
 alias z="exec zsh"
 alias cdhigh="cd ~/alx_se/alx-higher_level_programming"
 alias cdlow="cd ~/alx_se/alx-low_level_programming"
@@ -18,7 +23,8 @@ alias cdcheck="cd ~/alx_se/checker_suite"
 alias cdcheck="cd ~/alx_se/checker_suite"
 alias l="ls -gGa"
 alias gcc_flags="gcc -Wall -Wextra -Werror -pedantic -std=gnu89"
-alias rm_swap="rm ~/.local/share/nvim/swap/*"
+# alias rm_swap="rm ~/.local/share/nvim/swap/*"
+alias rm_swap="rm ~/.local/state/nvim/swap/*"
 alias shell="gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh"
 alias she="~/alx_se/simple_shell/./hsh"
 alias monty="gcc -Wall -Werror -Wextra -pedantic -std=c89 *.c -o monty"
@@ -39,6 +45,7 @@ alias mysql="sudo mysql"
 alias mysql_root="sudo mysql -u root -p"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
+alias graph="git log --oneline --decorate --graph --all"
 ##########################################################################
 
 export RESET='\e[0m' # No Color
@@ -162,10 +169,10 @@ prompt_context(){}
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git python)
+plugins=(git python zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete)
 ZSH_DISABLE_COMPFIX='true'
 source $ZSH/oh-my-zsh.sh
-
+source $HOME/.zshprivate
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -212,18 +219,25 @@ alx() {
     fi
 }
 
-
+export VISUAL=nvim
 # Example aliases
 alias zshconfig="nvim ~/.zshrc"
 alias zshenv="nvim ~/.zshenv"
+alias zshprivate="nvim ~/.zshprivate"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias vimconfig="nvim ~/.config/nvim/init.lua"
 alias vimrc="nvim ~/.vimrc"
+alias kittyconfig="nvim ~/.config/kitty/kitty.conf"
 # export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export PATH=$PATH:/snap/bin
 export PATH=$PATH:/usr/local/go/bin
+export DISPLAY=:0
+export XDG_SESSION_TYPE=x11
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export GLFW_PLATFORM=x11
+export KITTY_DISABLE_WAYLAND=1
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

@@ -22,7 +22,7 @@ lsp_mason.setup_handlers {
 		lspconfig[server_name].setup {
 			capabilities = capabilities,
 			on_attach = function()
-				vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = 0 })
+				vim.keymap.set('n', 'F', vim.lsp.buf.hover, { buffer = 0 })
 				vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = 0 })
 				vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, { buffer = 0 })
 				vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = 0 })
