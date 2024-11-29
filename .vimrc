@@ -27,7 +27,8 @@ autocmd BufWritePre *.html :%s/\s\+$//e
 autocmd BufWritePre *.js :%s/\s\+$//e 
 autocmd BufWritePre *.ts :%s/\s\+$//e 
 autocmd BufWritePre *.css :%s/\s\+$//e 
-autocmd BufWritePre *.sql :%s/\s\+$//e 
+autocmd BufWritePre *.sql :%s/\s\+$//e
+" autocmd BufWritePre *.js, *.jsx, *.ts, *.tsx EslintFixAll
 
 " find and replace
 command! -bang -nargs=* Find call fzf#vim#grep(
@@ -61,6 +62,10 @@ let g:lazygit_floating_window_use_plenary = 1 " use plenary.nvim to manage float
 " OR
 " let g:lazygit_config_file_path = [] " list of custom config file paths
 " autocmd BufEnter * :lua require('lazygit.utils').project_root_dir()
+
+" telescope emoji
+nnoremap <leader>em :Telescope emoji<CR>
+
 
 " git signs
 set statusline+=%{get(b:,'gitsigns_status','')}

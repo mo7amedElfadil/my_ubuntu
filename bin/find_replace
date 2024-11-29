@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Rename files and directories
+rename_files_and_dirs() {
+	echo "Renaming files and directories with $old_string to $new_string"
+	# Store find results in an array instead of piping
+	# ignore .git, node_modules, venv, horizon directories
+	mapfile -d $'\0' paths < <(find . -depth \( -name ".git" -o -name "node_modules" -o -name "venv" -o -name "horizon" \) -prune -o -name "*$old_string*" -print0)
+	# paths=($(find . -depth -name "*$old_string*"))
+    if [ ${#paths[@]} -eq 0 ]; then
+        echo "No matching files or directories found for renaming."
+        return
+    fi
+	for path in "${paths[@]}"; do
+		# check if path contains ignore directories
+		if [[ $path == *".git"* ]] || [[ $path == *"node_modules"* ]] || [[ $path == *"venv"* ]] || [[ $path == *"horizon"* ]]; then
+			continue
+		fi
+		new_path=$(echo "$path" | sed "s/$old_string/$new_string/Ig")
+		echo "Renaming $path to $new_path"
+		read -p "Are you sure? (y/n) " -n 1 -r
+		echo
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			mv "$path" "$new_path"
+		else
+			echo "Skipping $path"
+		fi
+	done
+}
+
+# Replace content in files
+replace_content_in_files() {
+	echo "Replacing content in files with $old_string to $new_string"
+	# Store grep results in an array instead of piping
+	mapfile -d $'\0' files < <(grep -rilZ "$old_string" . --exclude-dir={.git,node_modules,venv,horizon,__pycache__})
+	# files=($(grep -ril "$old_string" .))
+
+    if [ ${#files[@]} -eq 0 ]; then
+        echo "no files containing '$old_string' found for content replacement."
+        return
+    fi
+	for file in "${files[@]}"; do
+		echo "Replacing $old_string with $new_string in $file"
+		read -p "Are you sure? (y/n) " -n 1 -r
+		echo
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			sed -i "s/$old_string/$new_string/Ig" "$file"
+		else
+			echo "Skipping $file"
+		fi
+	done
+}
+
+find_replace() {
+	if [ "$#" -lt 4 ]; then
+		echo "Usage: find_replace -o <old_string> -n <new_string>"
+		exit 1
+	fi
+	
+	while getopts "o:n:" opt; do
+		case $opt in
+			o) old_string=$OPTARG ;;
+			n) new_string=$OPTARG ;;
+		esac
+	done
+
+	# Execute functions
+	rename_files_and_dirs
+	replace_content_in_files
+
+	echo "All instances of '$old_string' have been replaced with '$new_string'."
+}
+
+find_replace "$@"

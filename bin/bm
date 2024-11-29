@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-log_file="branch_manager.log"
-exec 2> >(tee -a "$log_file" >&2)
+# log_file="branch_manager.log"
+# exec 2> >(tee -a "$log_file" >&2)
 
 # Function to display help
 show_help() {
@@ -17,7 +17,7 @@ show_help() {
 	echo "  -m  Resolve merge conflicts"
 	echo
 	echo "Branch name should be prepended with one of the following:"
-	echo "  chore/, feat/, fixbug/, hotfix/"
+	echo "  chore/, feat/, bugfix/, hotfix/"
 	echo
 	exit 1
 }
@@ -57,8 +57,8 @@ resolve_merge(){
 # Function to validate branch name
 validate_branch_name() {
 	local branch_name=$1
-	if [[ ! $branch_name =~ ^(chore/|feat/|fixbug/|hotfix/).+ ]]; then
-		echo "Error: Invalid branch name. Branch name must start with 'chore/', 'feat/', 'fixbug/', or 'hotfix/'."
+	if [[ ! $branch_name =~ ^(chore/|feat/|bugfix/|hotfix/).+ ]]; then
+		echo "Error: Invalid branch name. Branch name must start with 'chore/', 'feat/', 'bugfix/', or 'hotfix/'."
 		return 1
 	fi
 	return 0
@@ -181,7 +181,7 @@ pull_and_check_dependencies() {
 create_branch_interactively() {
 	local branch_name
 	while true; do
-		echo "Enter the new branch name (must start with 'chore/', 'feat/', 'fixbug/', or 'hotfix/'):"
+		echo "Enter the new branch name (must start with 'chore/', 'feat/', 'bugfix/', or 'hotfix/'):"
 		read -r branch_name
 		if validate_branch_name "$branch_name"; then
 			echo "Creating branch: $branch_name"

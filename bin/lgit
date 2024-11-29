@@ -1,0 +1,28 @@
+#!/bin/bash
+# adds, commits and pushes to git
+function lazygit() {
+	# check number of arguments
+	while getopts ":h" opt; do
+		case ${opt} in
+			h)
+				echo "Usage: lazygit [<file>] <message>"
+				return 0
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: lazygit [<file>] <message>"
+				return 1
+				;;
+		esac
+	done
+	if [ $# -eq 1 ]; then
+		git add .
+		git commit -a -m "$1"
+	else
+		git add "$1"
+		git commit -a -m "$2"
+	fi
+	git push
+}
+
+lazygit "$@"

@@ -14,25 +14,25 @@ function pip_installer {
 	# check if the user has provided a python file
 	if [ $# -eq 0 ]; then
 		echo -e "${RED}Error: No python file provided${NC}"
-		exit 1
+		return 1
 	fi
 
 	# check if the python file exists
 	if [ ! -f $1 ]; then
 		echo -e "${RED}Error: File $1 not found${NC}"
-		exit 1
+		return 1
 	fi
 
 	# check if the python file has a .py extension
-	if [[ $1 != *.py ]]; then
-		echo -e "${RED}Error: File $1 is not a python file${NC}"
-		exit 1
-	fi
+	# if [[ $1 != *.py ]]; then
+	# 	echo -e "${RED}Error: File $1 is not a python file${NC}"
+	# 	return 1
+	# fi
 
 	# check if the python file is executable
 	if [ ! -x $1 ]; then
 		echo -e "${RED}Error: File $1 is not executable${NC}"
-		exit 1
+		return 1
 	fi
 
 
@@ -43,7 +43,7 @@ function pip_installer {
 	# check if the python file runs successfully
 	if python3 $1; then
 		echo -e "${GREEN}Script ran successfully${NC}"
-		exit 0
+		return 1
 	else
 		# get the error message
 		error_message=$(python3 $1 2>&1)
@@ -55,7 +55,7 @@ function pip_installer {
 			if [ -z "$required_modules" ]; then
 				echo -e "${RED}Error: Script failed to run${NC}"
 				echo -e "${RED}$error_message${NC}"
-				exit 1
+				return 1
 			fi
 			# install the required modules
 			for module in $required_modules; do
@@ -65,13 +65,13 @@ function pip_installer {
 				if [ $? -ne 0 ]; then
 					# print error message and exit
 					echo -e "${RED}Error: Failed to install $module${NC}"
-					exit 1
+					return 1
 				fi
 			done
 			# check if the script runs successfully
 			if python3 $1; then
 				echo -e "${GREEN}Script ran successfully${NC}"
-				exit 0
+				return 1
 			else
 				# get the error message
 				error_message=$(python3 $1 2>&1)

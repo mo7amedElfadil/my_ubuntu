@@ -21,16 +21,42 @@ lsp_mason.setup_handlers {
 	function(server_name) -- default handler (optional)
 		lspconfig[server_name].setup {
 			capabilities = capabilities,
-			on_attach = function()
-				vim.keymap.set('n', 'F', vim.lsp.buf.hover, { buffer = 0 })
-				vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = 0 })
-				vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, { buffer = 0 })
-				vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = 0 })
-				vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { buffer = 0 })
+			on_attach = function(client, bufnr)
+				vim.keymap.set('n', 'F', vim.lsp.buf.hover, { buffer = bufnr })
+				vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr })
+				vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, { buffer = bufnr })
+				vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = bufnr })
+				vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { buffer = bufnr })
 			end,
-
 		}
 	end,
+	 -- Custom handler for ESLint
+  ['eslint'] = function()
+    lspconfig.eslint.setup {
+      capabilities = capabilities,
+      on_attach = function(client, bufnr)
+        -- Auto-fix ESLint issues on save
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          buffer = bufnr,
+          command = "EslintFixAll",
+        })
+
+        -- ESLint keymaps and formatting
+        vim.keymap.set('n', 'F', vim.lsp.buf.hover, { buffer = bufnr })
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr })
+        vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, { buffer = bufnr })
+        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = bufnr })
+        vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { buffer = bufnr })
+      end,
+      settings = {
+        format = { enable = true },
+        codeActionOnSave = {
+          enable = true,
+          mode = "all", -- Auto-fix ESLint errors on save
+        },
+      },
+    }
+  end,
 	-- Next, you can provide a dedicated handler for specific servers.
 	-- ['pylsp'] = function()
 	-- 	lspconfig.pylsp.setup {

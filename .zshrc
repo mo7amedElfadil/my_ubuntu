@@ -5,6 +5,7 @@ alias s="git status"
 alias p="git push"
 alias cat="bat"
 alias z="exec zsh"
+alias docs="cd ~/Documents"
 alias cdhigh="cd ~/alx_se/alx-higher_level_programming"
 alias cdlow="cd ~/alx_se/alx-low_level_programming"
 alias cdmon="cd ~/alx_se/monty"
@@ -40,12 +41,15 @@ alias settings="gnome-control-center"
 alias update="sudo apt update && sudo apt upgrade"
 alias install="sudo apt install"
 alias remove="sudo apt remove"
-alias zshtheme="nvim ~/.oh-my-zsh/custom/themes/example.zsh-theme"
 alias mysql="sudo mysql"
 alias mysql_root="sudo mysql -u root -p"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 alias graph="git log --oneline --decorate --graph --all"
+alias ghc="gh copilot"
+alias k="kitty"
+alias icat="kitten icat"
+alias ports="sudo netstat -tlnp | grep LISTEN"	
 ##########################################################################
 
 export RESET='\e[0m' # No Color
@@ -224,15 +228,22 @@ export VISUAL=nvim
 alias zshconfig="nvim ~/.zshrc"
 alias zshenv="nvim ~/.zshenv"
 alias zshprivate="nvim ~/.zshprivate"
+alias zshtheme="nvim ~/.oh-my-zsh/custom/themes/example.zsh-theme"
+alias zshvars="nvim ~/.zshvars"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias vimconfig="nvim ~/.config/nvim/init.lua"
 alias vimrc="nvim ~/.vimrc"
 alias kittyconfig="nvim ~/.config/kitty/kitty.conf"
+alias kittydoc="nvim ~/.config/kitty/README.md"
 # export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export PATH=$PATH:/snap/bin
 export PATH=$PATH:/usr/local/go/bin
+
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
 export XDG_RUNTIME_DIR=/run/user/$(id -u)

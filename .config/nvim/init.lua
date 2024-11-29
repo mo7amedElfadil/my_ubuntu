@@ -96,6 +96,7 @@ Plug('tpope/vim-fireplace', { ['for'] = 'clojure' });
 Plug 'stevearc/aerial.nvim'
 Plug('nvim-telescope/telescope.nvim', { ['tag'] = '0.1.8' });
 Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'});
+Plug 'xiyaowong/telescope-emoji.nvim'
 
 Plug('catppuccin/nvim', { ['as'] = 'catppuccin' });
 -- Using a non-default branch
@@ -143,13 +144,14 @@ require('auto_cmp')
 require('keybindings')
 
 -- VIM GIT SIGNS --
-require('gitsigns').setup()
+-- require('gitsigns').setup()
 -- require('hologram').setup{
 -- 	width = 80,
 -- 	height = 60,
 --     auto_display = true -- WIP automatic markdown image display, may be prone to breaking
 -- }
 require('telescope').load_extension('lazygit')
+require('telescope').load_extension('emoji')
 
 require('noice').setup({
   views = {

@@ -33,6 +33,49 @@ function help() {
 	echo "vv: Open nvim at a specific line number"
 }
 
+toggle_opacity() {
+	sh ~/.config/kitty/toggle-transparency.sh
+}
+
+copy() {
+	cat $1 | xclip -selection clipboard 
+}
+
+model() {
+	RED='\033[1;31m'
+	YELLOW='\033[1;33m'
+	BLUE='\033[1;34m'
+	GREEN='\033[1;32m'
+	RESET='\033[0m'
+	
+	
+	# ollama run qwen2.5:7b
+	#
+	while getopts ":hq" opt; do
+		case ${opt} in
+			h)
+				echo "Usage: model [-h] [-q <query>]"
+				echo "Options:"
+				echo "  -h: Display the help menu"
+				echo "  -q: run qwen2.5:7b"
+				return 0
+				;;
+			q)
+				ollama run qwen2.5:7b
+				;;
+			\? )
+				echo "Invalid option: $OPTARG" 1>&2
+				echo "Usage: model [-h] [-q <query>]"
+				return 1
+				;;
+			: )
+				echo "Option -$OPTARG requires an argument." 1>&2
+				echo "Usage: model [-h] [-q <query>]"
+				return 1
+				;;
+		esac
+	done
+}
 function newcat() {
 	# contatenates words with a separator '_' and creates a directory or file
 	# the function takes in a string of words from the command line
@@ -351,82 +394,82 @@ incr() {
 # if the script fails, it will print the error message and exit
 #
 # Usage: ./pip_installer.sh <python_file>
-function pip_installer {
-	RED='\033[0;31m'
-	GREEN='\033[0;32m'
-	NC='\033[0m' # No Color
+# function pip_installer {
+# 	RED='\033[0;31m'
+# 	GREEN='\033[0;32m'
+# 	NC='\033[0m' # No Color
 
-	# check if the user has provided a python file
-	if [ $# -eq 0 ]; then
-		echo -e "${RED}Error: No python file provided${NC}"
-		exit 1
-	fi
+# 	# check if the user has provided a python file
+# 	if [ $# -eq 0 ]; then
+# 		echo -e "${RED}Error: No python file provided${NC}"
+# 		exit 1
+# 	fi
 
-	# check if the python file exists
-	if [ ! -f $1 ]; then
-		echo -e "${RED}Error: File $1 not found${NC}"
-		exit 1
-	fi
+# 	# check if the python file exists
+# 	if [ ! -f $1 ]; then
+# 		echo -e "${RED}Error: File $1 not found${NC}"
+# 		exit 1
+# 	fi
 
-	# check if the python file has a .py extension
-	if [[ $1 != *.py ]]; then
-		echo -e "${RED}Error: File $1 is not a python file${NC}"
-		exit 1
-	fi
+# 	# check if the python file has a .py extension
+# 	if [[ $1 != *.py ]]; then
+# 		echo -e "${RED}Error: File $1 is not a python file${NC}"
+# 		exit 1
+# 	fi
 
-	# check if the python file is executable
-	if [ ! -x $1 ]; then
-		echo -e "${RED}Error: File $1 is not executable${NC}"
-		exit 1
-	fi
-
-
-	# start by installing requests module
-	pip3 install requests
+# 	# check if the python file is executable
+# 	if [ ! -x $1 ]; then
+# 		echo -e "${RED}Error: File $1 is not executable${NC}"
+# 		exit 1
+# 	fi
 
 
-	# check if the python file runs successfully
-	if python3 $1; then
-		echo -e "${GREEN}Script ran successfully${NC}"
-		exit 0
-	else
-		# get the error message
-		error_message=$(python3 $1 2>&1)
-		# get the required modules
-		while true; do
-			# get the required modules
-			required_modules=$(echo $error_message | grep -oP "No module named '\K[^']*")
-			# check if there are no required modules
-			if [ -z "$required_modules" ]; then
-				echo -e "${RED}Error: Script failed to run${NC}"
-				echo -e "${RED}$error_message${NC}"
-				exit 1
-			fi
-			# install the required modules
-			for module in $required_modules; do
-				echo -e "${GREEN}Installing $module${NC}"
-				pip3 install $module
-				# check if the module was installed successfully
-				if [ $? -ne 0 ]; then
-					# print error message and exit
-					echo -e "${RED}Error: Failed to install $module${NC}"
-					exit 1
-				fi
-			done
-			# check if the script runs successfully
-			if python3 $1; then
-				echo -e "${GREEN}Script ran successfully${NC}"
-				exit 0
-			else
-				# get the error message
-				error_message=$(python3 $1 2>&1)
-			fi
-		done
-	fi
-}
+# 	# start by installing requests module
+# 	pip3 install requests
+
+
+# 	# check if the python file runs successfully
+# 	if python3 $1; then
+# 		echo -e "${GREEN}Script ran successfully${NC}"
+# 		exit 0
+# 	else
+# 		# get the error message
+# 		error_message=$(python3 $1 2>&1)
+# 		# get the required modules
+# 		while true; do
+# 			# get the required modules
+# 			required_modules=$(echo $error_message | grep -oP "No module named '\K[^']*")
+# 			# check if there are no required modules
+# 			if [ -z "$required_modules" ]; then
+# 				echo -e "${RED}Error: Script failed to run${NC}"
+# 				echo -e "${RED}$error_message${NC}"
+# 				exit 1
+# 			fi
+# 			# install the required modules
+# 			for module in $required_modules; do
+# 				echo -e "${GREEN}Installing $module${NC}"
+# 				pip3 install $module
+# 				# check if the module was installed successfully
+# 				if [ $? -ne 0 ]; then
+# 					# print error message and exit
+# 					echo -e "${RED}Error: Failed to install $module${NC}"
+# 					exit 1
+# 				fi
+# 			done
+# 			# check if the script runs successfully
+# 			if python3 $1; then
+# 				echo -e "${GREEN}Script ran successfully${NC}"
+# 				exit 0
+# 			else
+# 				# get the error message
+# 				error_message=$(python3 $1 2>&1)
+# 			fi
+# 		done
+# 	fi
+# }
 
 # adds, commits and pushes to git
-function lazygit() {
+function lgit() {
 	# check number of arguments
 	while getopts ":h" opt; do
 		case ${opt} in
@@ -566,13 +609,13 @@ function bot()
 		echo "Usage: bot [r/run/k/kill/t/tail/l/log/s/status/u/update]"
 		return 1
 	fi
-	IP=$SERVER3LB
-	USER=ubuntu
-	# r or run
-	# k or kill
+	IP=$DNIP
+	USER=$DNU
+
 	if [ "$1" = "r" ] || [ "$1" = "run" ]; then
-		echo "starting bot"
-		ssh -i "$sshKEY" "$USER@$IP" "pkill bot"
+		echo "kill bot"
+		ssh -i "$DNPK" "$USER@$IP" "pkill bot"
+		echo "running bot"
 		COMMAND="bot $discordTOKEN"
 	elif [ "$1" = "k" ] || [ "$1" = "kill" ]; then
 		echo "killing bot"
@@ -588,10 +631,12 @@ function bot()
 		COMMAND="pgrep bot && echo 'Bot is running' || echo 'Bot is not running'"
 	elif [ "$1" = 'u' ] || [ "$1" = 'update' ]; then
 		FILE=~/alx_se/RMFbot/bkup/version2/bot
-		IP="$SERVER3LB"
-		USER="ubuntu"
-		path_to_ssh_key="$sshKEY"
-		scp -o StrictHostKeyChecking=no -i "$path_to_ssh_key" "$FILE" "$USER@$IP":/bin/
+		scp -o StrictHostKeyChecking=no -i "$DNPK" "$FILE" "$USER@$IP":/bin/
+		if [ $? -eq 0 ]; then
+			echo "Bot updated successfully"
+		else
+			echo "Failed to update bot"
+		fi
 		bot r
 		return 0
 	else
@@ -599,7 +644,8 @@ function bot()
 		echo "Usage: bot [r/run/k/kill/t/tail/l/log/s/status/u/update]"
 		return 1
 	fi
-	ssh -i "$sshKEY" "$USER@$IP" "$COMMAND"
+	echo "Running command: $COMMAND"
+	ssh -i "$DNPK" "$USER@$IP" "$COMMAND"
 }
 
 # Add a file to the .gitignore file to not ignore it
