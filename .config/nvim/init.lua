@@ -232,5 +232,11 @@ require('noice').setup({
 require('notify').setup({
   timeout = 800, -- Adjust this value as needed
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "python",
+    command = "setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab"
+})
 -- source some vim config
 vim.cmd("source ~/.vimrc");
+

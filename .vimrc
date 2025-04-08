@@ -47,7 +47,9 @@ augroup custom_indentation
 	autocmd Filetype puppet setlocal ts=2 sw=2 expandtab
 	" Update indentation for js, jsx, tsx
 	autocmd Filetype javascript,javascriptreact,typescriptreact,typescript setlocal ts=2 sw=2 expandtab
-	" for js/coffee/jade files, 4 spaces
+	" for python 4 spaces
+	autocmd Filetype python setlocal ts=4 sw=4 expandtab
+	
 augroup END
 
 " lazygit
@@ -113,7 +115,7 @@ highlight Normal ctermfg=grey ctermbg=black guifg=grey guibg=black
 " current theme:
 :colorscheme catppuccin-mocha " catppuccin catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 
-set smartindent
+" set smartindent
 " set cindent
 syntax enable
 "set relativenumber

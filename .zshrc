@@ -1,8 +1,9 @@
 alias v="nvim"
+alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
+alias n='nvim-kickstart'
 alias c="clear"
 alias h="history"
-alias s="git status"
-alias p="git push"
+alias deploy="git deploy"
 alias cat="bat"
 alias z="exec zsh"
 alias docs="cd ~/Documents"
@@ -33,7 +34,7 @@ alias venv="python3 -m venv venv"
 alias act="source venv/bin/activate"
 alias deact="deactivate"
 alias venv="python3 -m venv venv"
-alias act="source venv/bin/activate"
+alias act="source .venv/bin/activate"
 alias deact="deactivate"
 alias suroot='sudo -E -s'
 alias w3c_validator="python3 ~/Git_repos/W3C-Validator/w3c_validator.py"
@@ -50,8 +51,10 @@ alias ghc="gh copilot"
 alias k="kitty"
 alias icat="kitten icat"
 alias ports="sudo netstat -tlnp | grep LISTEN"	
+alias npm4="node --dns-result-order=ipv4first $(which npm)"
 ##########################################################################
 
+export PATH="$PATH:/opt/nvim-linux64/bin"
 export RESET='\e[0m' # No Color
 export COLOR_RED='\e[0;31m'
 export COLOR_GREEN='\e[0;32m'
@@ -250,7 +253,21 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export GLFW_PLATFORM=x11
 export KITTY_DISABLE_WAYLAND=1
 
+export PATH="$PATH:$(npm config get prefix)/bin"
+export PATH=$PATH:$(npm root -g)/.bin
 export NVM_DIR="$HOME/.nvm"
+
+export PULSE_SERVER=127.0.0.1
+
+# Golang environment variables
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+
+# Update PATH to include GOPATH and GOROOT binaries
+export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
+
+
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 neofetch
+
