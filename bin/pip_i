@@ -1,0 +1,157 @@
+#!/bin/bash
+# Installs python modules using pip
+# The script takes in a python file or module specifier and tries to run it.
+# If it fails due to missing modules, it will install them and retry.
+# If the script/module runs successfully, it will print its output and exit.
+# If the script/module fails for other reasons or if module installation fails,
+# it will print the error message and exit.
+#
+# Usage: ./pip_installer.sh <python_file_or_module_specifier> [python_args...]
+
+function pip_installer {
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    NC='\033[0m' # No Color
+
+    if [ $# -eq 0 ]; then
+        echo -e "${RED}Error: No python script or module specified.${NC}"
+        echo -e "Usage: $0 <python_file_or_module_specifier> [python_args...]"
+        return 1
+    fi
+
+    local target_to_run="$1"
+    shift # Remove the script/module name, remaining are python_args
+    local python_args=("$@")
+    local python_executable="python3"
+    local run_command=()
+    
+    local stderr_file_initial
+    local stderr_file_retry
+    stderr_file_initial=$(mktemp /tmp/pip_installer_stderr_initial.XXXXXX)
+    if [ -z "$stderr_file_initial" ] || [ ! -f "$stderr_file_initial" ]; then
+        echo -e "${RED}Error: Could not create temporary file for initial stderr.${NC}"
+        return 1
+    fi
+    stderr_file_retry=$(mktemp /tmp/pip_installer_stderr_retry.XXXXXX)
+    if [ -z "$stderr_file_retry" ] || [ ! -f "$stderr_file_retry" ]; then
+        echo -e "${RED}Error: Could not create temporary file for retry stderr.${NC}"
+        rm -f "$stderr_file_initial"
+        return 1
+    fi
+
+    # Ensure cleanup of temp files on exit
+    trap 'rm -f "$stderr_file_initial" "$stderr_file_retry"' EXIT INT TERM
+
+    # Determine if target_to_run is a file or a module
+    if [ -f "$target_to_run" ]; then
+        run_command=("$python_executable" "$target_to_run" "${python_args[@]}")
+        echo -e "Attempting to run Python script: ${GREEN}${run_command[*]}${NC}"
+    else
+        run_command=("$python_executable" "-m" "$target_to_run" "${python_args[@]}")
+        echo -e "Attempting to run Python module: ${GREEN}${run_command[*]}${NC}"
+    fi
+
+    # Initial attempt to run
+    local output_content
+    local error_content
+    local exit_status
+
+    output_content=$("${run_command[@]}" 2> "$stderr_file_initial")
+    exit_status=$?
+    # Read error content *after* checking exit status, as command might clear/truncate file on its own.
+    error_content=$(cat "$stderr_file_initial")
+
+
+    if [ $exit_status -eq 0 ]; then
+        echo -e "${GREEN}Script/Module ran successfully on the first attempt.${NC}"
+        if [ -n "$output_content" ]; then
+            echo -e "${GREEN}Standard Output:${NC}\n$output_content"
+        fi
+        if [ -n "$error_content" ]; then # Python might print to stderr even on success (e.g. warnings)
+            echo -e "${GREEN}Standard Error (if any):${NC}\n$error_content"
+        fi
+        return 0 # Success
+    else
+        local current_full_error_message="${output_content}\n${error_content}"
+        declare -A attempted_installs_map # Associative array to track modules for which install was attempted
+
+        while true; do
+            # Parse unique module names from the last error message
+            mapfile -t current_required_modules < <(echo -e "$current_full_error_message" | grep -oP "No module named '\K[^']*" | sort -u)
+
+            if [ ${#current_required_modules[@]} -eq 0 ]; then
+                echo -e "${RED}Script/Module failed to run. No 'No module named' errors found in the last output.${NC}"
+                echo -e "${RED}The last execution attempt failed with the following (exit code $exit_status):${NC}\n$current_full_error_message"
+                return 1 # Failure
+            fi
+
+            local newly_identified_modules_for_this_iteration=0
+
+            for module_to_check in "${current_required_modules[@]}"; do
+                if [[ -z "${attempted_installs_map[$module_to_check]}" ]]; then
+                    newly_identified_modules_for_this_iteration=$((newly_identified_modules_for_this_iteration + 1))
+                    echo -e "${GREEN}Missing module identified: $module_to_check. Attempting installation via pip3...${NC}"
+                    
+                    local pip_install_output
+                    local pip_status
+                    # Ensure pip output doesn't interfere with current error message parsing if it prints to stdout/stderr
+                    pip_install_output=$(pip3 install "$module_to_check" 2>&1)
+                    pip_status=$?
+                    
+                    attempted_installs_map["$module_to_check"]=1 # Mark as attempted
+
+                    if [ $pip_status -eq 0 ]; then
+                        echo -e "${GREEN}pip3 install $module_to_check command finished (exit code $pip_status).${NC}"
+                        # To see pip's output (e.g., "Requirement already satisfied"):
+                        # echo -e "pip3 output for $module_to_check:\n$pip_install_output"
+                    else
+                        echo -e "${RED}Error: Failed to install $module_to_check (pip3 exit code: $pip_status)${NC}"
+                        echo -e "${RED}pip3 install output:${NC}\n$pip_install_output"
+                        echo -e "${RED}Stopping due to installation failure.${NC}"
+                        echo -e "${RED}Python error leading to this was:${NC}\n$current_full_error_message"
+                        return 1 # Critical pip install failure
+                    fi
+                fi
+            done
+
+            if [ "$newly_identified_modules_for_this_iteration" -eq 0 ]; then
+                # All modules currently listed as missing have been processed in previous iterations.
+                echo -e "${RED}Script/Module still fails with 'No module named' errors for modules already processed: (${current_required_modules[*]}).${NC}"
+                echo -e "${RED}This might indicate a Python environment issue (e.g., pip installing to a different Python environment than the one being used by '$python_executable'), or the package installed does not correctly provide the module.${NC}"
+                echo -e "${RED}Final error message was:${NC}\n$current_full_error_message"
+                return 1 # Failure due to persistent error
+            fi
+            
+            echo -e "Re-attempting to run: ${GREEN}${run_command[*]}${NC}"
+            
+            local output_content_after_install
+            local error_content_after_install
+            local exit_status_after_install
+
+            output_content_after_install=$("${run_command[@]}" 2> "$stderr_file_retry")
+            exit_status_after_install=$?
+            error_content_after_install=$(cat "$stderr_file_retry")
+
+
+            if [ $exit_status_after_install -eq 0 ]; then
+                echo -e "${GREEN}Script/Module ran successfully after installing modules.${NC}"
+                if [ -n "$output_content_after_install" ]; then
+                    echo -e "${GREEN}Standard Output:${NC}\n$output_content_after_install"
+                fi
+                if [ -n "$error_content_after_install" ]; then
+                     echo -e "${GREEN}Standard Error (if any):${NC}\n$error_content_after_install"
+                fi
+                return 0 # Success
+            else
+                # Update current_full_error_message for the next iteration of the while loop
+                current_full_error_message="${output_content_after_install}\n${error_content_after_install}"
+                # Update overall exit status to reflect the latest failure for the error message if the loop breaks next
+                exit_status="$exit_status_after_install"
+            fi
+        done
+    fi
+}
+
+# Call the function with all script arguments
+pip_installer "$@"
+exit $? # Propagate the return code of pip_installer
