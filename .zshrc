@@ -1,10 +1,10 @@
-alias v="nvim"
+alias n="nvim"
 alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
-alias n='nvim-kickstart'
+alias v='nvim-kickstart'
 alias c="clear"
 alias h="history"
 alias deploy="git deploy"
-alias cat="bat"
+# alias cat="bat"
 alias z="exec zsh"
 alias docs="cd ~/Documents"
 alias cdhigh="cd ~/alx_se/alx-higher_level_programming"
@@ -31,8 +31,6 @@ alias shell="gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh"
 alias she="~/alx_se/simple_shell/./hsh"
 alias monty="gcc -Wall -Werror -Wextra -pedantic -std=c89 *.c -o monty"
 alias venv="python3 -m venv venv"
-alias act="source venv/bin/activate"
-alias deact="deactivate"
 alias venv="python3 -m venv venv"
 alias act="source .venv/bin/activate"
 alias deact="deactivate"
@@ -47,11 +45,17 @@ alias mysql_root="sudo mysql -u root -p"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 alias run_dd="DD_SITE=$DD_SITE DD_API_KEY=$DD_API_KEY DD_APP_KEY=$DD_APP_KEY python3 $1"
 alias graph="git log --oneline --decorate --graph --all"
+alias python="python3"
 alias ghc="gh copilot"
+alias gitf='git commit -m "$(git diff --cached  | fabric -p summarize_git_diff || echo "chore: update files")"'
+
+alias cdn="cd /home/mo7amed/.config/nvim/"
 alias k="kitty"
 alias icat="kitten icat"
 alias ports="sudo netstat -tlnp | grep LISTEN"	
 alias npm4="node --dns-result-order=ipv4first $(which npm)"
+
+alias tm="task-master"
 ##########################################################################
 
 export PATH="$PATH:/opt/nvim-linux64/bin"
@@ -228,16 +232,16 @@ alx() {
 
 export VISUAL=nvim
 # Example aliases
-alias zshconfig="nvim ~/.zshrc"
-alias zshenv="nvim ~/.zshenv"
-alias zshprivate="nvim ~/.zshprivate"
-alias zshtheme="nvim ~/.oh-my-zsh/custom/themes/example.zsh-theme"
-alias zshvars="nvim ~/.zshvars"
-alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias vimconfig="nvim ~/.config/nvim/init.lua"
-alias vimrc="nvim ~/.vimrc"
-alias kittyconfig="nvim ~/.config/kitty/kitty.conf"
-alias kittydoc="nvim ~/.config/kitty/README.md"
+alias zshconfig="n ~/.zshrc"
+alias zshenv="n ~/.zshenv"
+alias zshprivate="n ~/.zshprivate"
+alias zshtheme="n ~/.oh-my-zsh/custom/themes/example.zsh-theme"
+alias zshvars="n ~/.zshvars"
+alias ohmyzsh="n ~/.oh-my-zsh"
+alias vimconfig="n ~/.config/nvim/init.lua"
+alias vimrc="n ~/.vimrc"
+alias kittyconfig="n ~/.config/kitty/kitty.conf"
+alias kittydoc="n ~/.config/kitty/README.md"
 # export LD_PRELOAD="/home/mo7amed/git/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -256,6 +260,7 @@ export KITTY_DISABLE_WAYLAND=1
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH=$PATH:$(npm root -g)/.bin
 export NVM_DIR="$HOME/.nvm"
+export PATH=~/.npm-global/bin:$PATH
 
 export PULSE_SERVER=127.0.0.1
 
@@ -271,3 +276,11 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 neofetch
 
+export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+
+# bun completions
+[ -s "/home/mo7amed/.bun/_bun" ] && source "/home/mo7amed/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
